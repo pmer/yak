@@ -1,0 +1,3 @@
+handle_nicknameinuse
+handle_yourebanned
+ping

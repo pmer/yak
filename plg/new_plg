@@ -1,0 +1,71 @@
+#!/bin/bash
+# new_plg - create a skeleton for a new Yak plugin
+
+name=$1
+
+usage() {
+	echo "usage: $0 <name>"
+	echo "Creates a skeleton for a new Yak plugin."
+	exit 1
+}
+
+if [ "$#" != "1" ]; then
+	usage
+fi
+if [[ $name == -* ]]; then
+	usage
+fi
+if [ -e "$name" ]; then
+	echo "$0: $name: already exists"
+	exit 1
+fi
+
+
+
+#
+# $name/
+#
+echo creating "$name/"
+mkdir "$name" || exit 1
+
+
+#
+# Makefile
+#
+echo creating "$name/Makefile"
+cat > "$name/Makefile" <<EOF
+SO=$name.so
+CFLAGS=-g -fPIC -I../..
+LDFLAGS=-g -fPIC -shared
+OBJS = \
+	$name.o
+
+all: \$(SO)
+
+clean:
+	\$(RM) \$(OBJS) \$(SO)
+
+\$(SO): \$(OBJS)
+	\$(CC) -o \$(SO) \$(OBJS) \$(LDFLAGS)
+
+EOF
+
+
+#
+# $name.c
+#
+echo creating "$name/$name.c"
+cat > "$name/$name.c" << EOF
+#include "ircproto.h"
+
+int init()
+{
+	ircproto_privmsg("#world", "Hello!");
+	return 0;
+}
+
+void finish()
+{
+}
+
+EOF
