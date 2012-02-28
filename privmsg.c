@@ -11,31 +11,6 @@
 #include "privmsg.h"
 
 /*
- * Callback functions.
- */
-static void make(char *usr, char *src, char *msg)
-{
-	if (!is_owner_nick(usr)) {
-		ircproto_privmsg(src, "err: not owner");
-		return;
-	}
-
-	safe_shutdown();
-	system("make && ./yak");
-	exit(0);
-}
-
-static void quit(char *usr, char *src, char *msg)
-{
-	if (!is_owner_nick(usr)) {
-		ircproto_privmsg(src, "err: not owner");
-		return;
-	}
-
-	want_quit = true;
-}
-
-/*
  * Callback data structure.
  */
 struct reevent_t {
@@ -110,7 +85,5 @@ void privmsg_init()
 {
 	str_events = hashtab_create(str_hash, strcmp_hash,
 		PRIVMSG_CSTR_BUCKETS);
-	callback_register_privmsg_str(make, "make");
-	callback_register_privmsg_str(quit, "quit");
 }
 

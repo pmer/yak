@@ -1,3 +1,5 @@
 handle_nicknameinuse
 handle_yourebanned
+make
 ping
+quit
