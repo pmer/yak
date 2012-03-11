@@ -11,7 +11,7 @@
 
 #define REGEX_MATCH_VEC_SZ (3*(REGEX_MAX_CAPTURES+1))
 
-static void regex_compile(struct regex_t *re)
+static void regex_compile(struct regex *re)
 {
 	const char* err;
 	int erroff;
@@ -27,7 +27,7 @@ static void regex_compile(struct regex_t *re)
 	}
 }
 
-static int regex_match_exec(struct regex_t *re, char *str, char **caps)
+static int regex_match_exec(struct regex *re, char *str, char **caps)
 {
 	/* assumes re->state == RCS_COMPILED */
 	int vec[REGEX_MATCH_VEC_SZ];
@@ -55,7 +55,7 @@ static int regex_match_exec(struct regex_t *re, char *str, char **caps)
 	return matches;
 }
 
-int regex_match(struct regex_t *re, char *str, char **caps)
+int regex_match(struct regex *re, char *str, char **caps)
 {
 	switch (re->state) {
 	case RCS_UNINIT:
@@ -70,7 +70,7 @@ int regex_match(struct regex_t *re, char *str, char **caps)
 	return 0;
 }
 
-void regex_free(struct regex_t *re)
+void regex_free(struct regex *re)
 {
 	if (re->state == RCS_COMPILED)
 		pcre_free(re->re_detail);

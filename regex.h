@@ -16,7 +16,7 @@ enum regex_compiled_state {
 	RCS_COMPILED,
 };
 
-struct regex_t {
+struct regex {
 	char *pattern;
 	enum regex_compiled_state state;
 	void *re_detail; /* struct pcre* re_detail */
@@ -37,7 +37,7 @@ struct regex_t {
  * Returns 1 + the number of successful captures if the string matches the
  * regex, or a negative number if it does not.
  */
-int regex_match(struct regex_t *re, char *str, char **caps);
+int regex_match(struct regex *re, char *str, char **caps);
 
 /**
  * regex_free - tries to free a compiled regex
@@ -46,7 +46,7 @@ int regex_match(struct regex_t *re, char *str, char **caps);
  * Frees the data associated with a compiled regular expression if it has any.
  * This function is safe to run even on uncompiled regexes.
  */
-void regex_free(struct regex_t *re);
+void regex_free(struct regex *re);
 
 #endif
 

@@ -3,7 +3,7 @@
 
 #include "list.h"
 
-struct chan_t {
+struct chan {
 	struct list_head link;
 	char name[512]; /* includes hash prefix */
 };

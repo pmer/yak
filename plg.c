@@ -8,7 +8,7 @@
 #include "list.h"
 #include "plg.h"
 
-struct plg_t {
+struct plg {
 	struct list_head link;
 	char name[256];
 	char file[256];
@@ -20,7 +20,7 @@ struct plg_t {
 /*
  * List of loaded plugins.
  */
-static struct plg_t plgs = {
+static struct plg plgs = {
 	.link = LIST_HEAD_INIT(plgs.link),
 };
 
@@ -54,47 +54,47 @@ void plg_load_plgs_from(char *filename)
 
 void plg_load(char *plg_name)
 {
-	struct plg_t *plg = malloc(sizeof(struct plg_t));
+	struct plg *p = malloc(sizeof(struct plg));
 
 	info("loading plugin: %s", plg_name);
-	strcpy(plg->name, plg_name);
-	snprintf(plg->file, sizeof(plg->file), "plg/%s/%s.so",
+	strcpy(p->name, plg_name);
+	snprintf(p->file, sizeof(p->file), "plg/%s/%s.so",
 		plg_name, plg_name);
-	plg->so = dlopen(plg->file, RTLD_NOW | RTLD_GLOBAL);
+	p->so = dlopen(p->file, RTLD_NOW | RTLD_GLOBAL);
 	if (pdlerror())
 		goto err;
-	plg->init = dlsym(plg->so, "init");
+	p->init = dlsym(p->so, "init");
 	if (pdlerror())
 		goto err;
-	plg->finish = dlsym(plg->so, "finish");
+	p->finish = dlsym(p->so, "finish");
 	if (pdlerror())
 		goto err;
-	if (plg->init()) {
+	if (p->init()) {
 		err("plg->init(): failed: %s", plg_name);
 		goto err;
 	}
-	list_add(&plg->link, &plgs.link);
+	list_add(&p->link, &plgs.link);
 	return;
 
 err:
-	free(plg);
+	free(p);
 }
 
 void plg_free_all()
 {
 	struct list_head *list, *next;
-	struct plg_t *plg;
+	struct plg *p;
 
 	list_for_each(list, &plgs.link) {
-		plg = list_entry(list, struct plg_t, link);
-		plg->finish();
-		dlclose(plg->so);
+		p = list_entry(list, struct plg, link);
+		p->finish();
+		dlclose(p->so);
 		pdlerror();
 	}
 	for (list = &plgs.link; list != &plgs.link; list = next) {
-		plg = list_entry(list, struct plg_t, link);
+		p = list_entry(list, struct plg, link);
 		next = list->next;
-		free(plg);
+		free(p);
 	}
 }
 

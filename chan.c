@@ -5,13 +5,13 @@
 #include "chan.h"
 #include "usr.h"
 
-static struct chan_t chans = {
+static struct chan chans = {
 	.link = LIST_HEAD_INIT(chans.link),
 };
 
 static void chan_track_start(char *chan_name)
 {
-	struct chan_t *chan = malloc(sizeof(struct chan_t));
+	struct chan *chan = malloc(sizeof(struct chan));
 	strcpy(chan->name, chan_name);
 	list_add(&chan->link, &chans.link);
 }

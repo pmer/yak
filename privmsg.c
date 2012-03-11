@@ -13,10 +13,10 @@
 /*
  * Callback data structure.
  */
-struct reevent_t {
+struct reevent {
 	struct list_head link;
 	callback_privmsg_re call;
-	struct regex_t match;
+	struct regex match;
 };
 
 /**
@@ -37,7 +37,7 @@ void callback_emit_privmsg(char *usr, char *src, char *msg)
 {
 	callback_privmsg_str call;
 	struct list_head *list;
-	struct reevent_t *rev;
+	struct reevent *rev;
 	int matches, ncap, i;
 
 	static char *caps[REGEX_MAX_CAPTURES];
@@ -58,7 +58,7 @@ void callback_emit_privmsg(char *usr, char *src, char *msg)
 
 	/* regex events */
 	list_for_each(list, &revents_head) {
-		rev = list_entry(list, struct reevent_t, link);
+		rev = list_entry(list, struct reevent, link);
 		matches = regex_match(&rev->match, msg, caps);
 		ncap = matches - 1;
 		if (ncap >= 0)
@@ -74,7 +74,7 @@ void callback_register_privmsg_str(callback_privmsg_str call, char *str)
 
 void callback_register_privmsg_re(callback_privmsg_re call, char *pattern)
 {
-	struct reevent_t *e = malloc(sizeof(struct reevent_t));
+	struct reevent *e = malloc(sizeof(struct reevent));
 	e->call = call;
 	e->match.pattern = pattern;
 	e->match.state = RCS_UNINIT;
