@@ -8,13 +8,9 @@ static void handle_yourebanned(char *prefix, int ncmd, char *params)
 	want_quit = true;
 }
 
-static struct event_numeric_t events[] = {
-	{ handle_yourebanned, ERR_YOUREBANNED }
-};
-
 int init()
 {
-	callback_register_numeric(events);
+	callback_register_numeric(handle_yourebanned, ERR_YOUREBANNED);
 	return 0;
 }
 

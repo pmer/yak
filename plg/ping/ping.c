@@ -6,13 +6,9 @@ static void handle_ping(char *prefix, char *cmd, char *params)
 	ircproto_pong(params);
 }
 
-static struct event_str_t events[] = {
-	{ handle_ping, "PING" }
-};
-
 int init()
 {
-	callback_register_str(events);
+	callback_register_str(handle_ping, "PING");
 	return 0;
 }
 

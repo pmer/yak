@@ -31,12 +31,8 @@ static void handle_join(char *prefix, char *cmd, char *params)
 	}
 }
 
-static struct event_str_t str_events[] = {
-	{ handle_join, "JOIN" },
-};
-
 void chan_init()
 {
-	callback_register_str(str_events);
+	callback_register_str(handle_join, "JOIN");
 }
 

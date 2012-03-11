@@ -25,13 +25,9 @@ static void handle_nicknameinuse(char *prefix, int ncmd, char *params)
 	ircproto_nick(bot_nick);
 }
 
-static struct event_numeric_t events[] = {
-	{ handle_nicknameinuse, ERR_NICKNAMEINUSE }
-};
-
 int init()
 {
-	callback_register_numeric(events);
+	callback_register_numeric(handle_nicknameinuse, ERR_NICKNAMEINUSE);
 	return 0;
 }
 

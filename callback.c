@@ -47,60 +47,44 @@ static void handle_privmsg(char *usr, char *cmd, char *src_and_msg)
 /*
  * Callback vectors.
  */
-static struct event_numeric_t num_events[MAX_NUMERIC];
+static callback_numeric num_events[MAX_NUMERIC];
 static struct hashtab *str_events;
-
-static struct event_str_t privmsg_event[] = {
-	{ handle_privmsg, "PRIVMSG" },
-};
 
 /*
  * Emitters.
  */
 void callback_emit_numeric(char *prefix, int ncmd, char *params)
 {
-	struct event_numeric_t *e;
+	callback_numeric call;
 
-	e = &num_events[ncmd];
-	if (e->call)
-		e->call(prefix, ncmd, params);
+	call = num_events[ncmd];
+	if (call)
+		call(prefix, ncmd, params);
 }
 
 void callback_emit_str(char *prefix, char *cmd, char *params)
 {
-	struct event_str_t *e;
+	callback_str call;
 
-	e = hashtab_search(str_events, cmd);
-	if (e && e->call)
-		e->call(prefix, cmd, params);
+	call = hashtab_search(str_events, cmd);
+	if (call)
+		call(prefix, cmd, params);
 }
 
 /*
  * Registration.
  */
-void _callback_register_numeric(struct event_numeric_t *events, int size)
+void callback_register_numeric(callback_numeric call, int ncmd)
 {
-	struct event_numeric_t *event;
-	int i;
-
-	for (i = 0; i < size; i++) {
-		event = &events[i];
-		if (num_events[event->ncmd].call)
-			info("warn: overwriting numeric event %d", event->ncmd);
-		num_events[event->ncmd] = *event;
-	}
+	if (num_events[ncmd])
+		info("warn: overwriting numeric event %d", ncmd);
+	num_events[ncmd] = call;
 }
 
-void _callback_register_str(struct event_str_t *events, int size)
+void callback_register_str(callback_str call, char *cmd)
 {
-	struct event_str_t *event;
-	int i;
-
-	for (i = 0; i < size; i++) {
-		event = &events[i];
-		if (hashtab_insert(str_events, event->cmd, event) == -1)
-			err("err: str event '%s' already exists", event->cmd);
-	}
+	if (hashtab_insert(str_events, cmd, call) == -1)
+		err("err: str event '%s' already exists", cmd);
 }
 
 /*
@@ -110,6 +94,5 @@ void callback_init()
 {
 	memset(num_events, 0, sizeof(num_events));
 	str_events = hashtab_create(str_hash, strcmp_hash, 15);
-	callback_register_str(privmsg_event);
+	callback_register_str(handle_privmsg, "PRIVMSG");
 }
-

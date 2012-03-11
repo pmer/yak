@@ -19,6 +19,10 @@ void establish_connection(char *host, int port)
 
 	info("connecting to irc://%s:%d", host, port);
 
+	/* FIXME
+	 * The gethostby* calls are obsolete since 2001.
+	 * Use getaddrinfo instead.
+	 */
 	he = gethostbyname(host);
 	if (!he) {
 		perror("gethostbyname");
