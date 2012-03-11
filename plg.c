@@ -20,9 +20,7 @@ struct plg {
 /*
  * List of loaded plugins.
  */
-static struct plg plgs = {
-	.link = LIST_HEAD_INIT(plgs.link),
-};
+static LIST_HEAD(plgs);
 
 
 static bool pdlerror()
@@ -73,7 +71,7 @@ void plg_load(char *plg_name)
 		err("plg->init(): failed: %s", plg_name);
 		goto err;
 	}
-	list_add(&p->link, &plgs.link);
+	list_add(&p->link, &plgs);
 	return;
 
 err:
@@ -85,13 +83,13 @@ void plg_free_all()
 	struct list_head *list, *next;
 	struct plg *p;
 
-	list_for_each(list, &plgs.link) {
+	list_for_each(list, &plgs) {
 		p = list_entry(list, struct plg, link);
 		p->finish();
 		dlclose(p->so);
 		pdlerror();
 	}
-	for (list = &plgs.link; list != &plgs.link; list = next) {
+	for (list = &plgs; list != &plgs; list = next) {
 		p = list_entry(list, struct plg, link);
 		next = list->next;
 		free(p);
