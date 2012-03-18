@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 #include "bool.h"
 #include "diagnostic.h"
 
@@ -93,4 +92,3 @@ void add_shutdown_fn(void (*fn)())
 	st->fn = fn;
 	stack_head = st;
 }
-

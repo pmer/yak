@@ -6,6 +6,7 @@
  * provided by the creator of the table.
  *
  * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
+ *          Paul Merrill, <napalminc@gmail.com>
  */
 #ifndef _SS_HASHTAB_H_
 #define _SS_HASHTAB_H_
@@ -46,12 +47,18 @@ struct hashtab *hashtab_create(unsigned (*hash_value)(struct hashtab *h, void *k
 /*
  * Inserts the specified (key, datum) pair into the specified hash table.
  *
- * Returns -ENOMEM on memory allocation error,
- * -EEXIST if there is already an entry with the same key,
- * -EINVAL for general errors or
-  0 otherwise.
+ * Returns -1 there is already an entry with the same key or
+ * 0 otherwise.
  */
 int hashtab_insert(struct hashtab *h, void *k, void *d);
+
+/*
+ * Removes the matching (key, datum) pair from the specified hash table.
+ *
+ * Returns -1 if the key was not found or
+ * 0 otherwise.
+ */
+int hashtab_remove(struct hashtab *h, void *key);
 
 /*
  * Searches for the entry with the specified key in the hash table.
@@ -66,24 +73,10 @@ void *hashtab_search(struct hashtab *h, void *k);
  */
 void hashtab_destroy(struct hashtab *h);
 
-/*
- * Applies the specified apply function to (key,datum,args)
- * for each entry in the specified hash table.
- *
- * The order in which the function is applied to the entries
- * is dependent upon the internal structure of the hash table.
- *
- * If apply returns a non-zero status, then hashtab_map will cease
- * iterating through the hash table and will propagate the error
- * return to its caller.
- */
-int hashtab_map(struct hashtab *h,
-		int (*apply)(void *k, void *d, void *args),
-		void *args);
-
 /* Fill info with some hash table statistics */
 void hashtab_stat(struct hashtab *h, struct hashtab_info *info);
 
+/* hash_value and hashcmp functions for char*s */
 unsigned str_hash(struct hashtab *h, void *data);
 int strcmp_hash(struct hashtab *h, void *a, void *b);
 

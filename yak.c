@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "acl.h"
 #include "bool.h"
 #include "callback.h"
 #include "chan.h"
@@ -11,6 +11,7 @@
 #include "plg.h"
 #include "privmsg.h"
 #include "socket.h"
+#include "usr.h"
 
 /*
  * Configuration.
@@ -40,7 +41,9 @@ int main()
 	int ncmd, i;
 
 	callback_init();
+	usr_init();
 	chan_init();
+	acl_init();
 	privmsg_init();
 
 	info("loading plugins from plugins.txt");
@@ -75,4 +78,3 @@ int main()
 	safe_shutdown();
 	return 0;
 }
-

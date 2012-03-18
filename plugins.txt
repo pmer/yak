@@ -1,5 +1,6 @@
 handle_nicknameinuse
 handle_yourebanned
+isupport
 make
 ping
 quit

@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 #include "diagnostic.h"
 #include "socket.h"
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 void ircproto_parse_message(char *msg, char **prefix, char **cmd,
 		int *ncmd, char **params)
@@ -43,6 +44,47 @@ void ircproto_read_message(char **prefix, char **cmd, int *ncmd, char **params)
 	ircproto_parse_message(sock_readline(), prefix, cmd, ncmd, params);
 }
 
+void ircproto_parse_prefix(char *prefix,
+                  char *nick, int nicksz,
+                  char *user, int usersz,
+                  char *host, int hostsz)
+{
+	char *bang, *at, *end, *uidx, *hidx;
+	int nlen, ulen, hlen;
+
+	bang = strchr(prefix, '!');
+	at = strchr(prefix, '@');
+	end = prefix + strlen(prefix);
+
+	if (nicksz) {
+		nlen = bang ? bang - prefix : end - prefix;
+		strncpy(nick, prefix, MAX(nlen, nicksz));
+		nick[nlen] = '\0';
+	}
+
+	if (usersz) {
+		if (bang) {
+			uidx = bang + 1;
+			ulen = at - uidx;
+			strncpy(user, uidx, MAX(ulen, usersz));
+			user[ulen] = '\0';
+		}
+		else
+			user[0] = '\0';
+	}
+
+	if (hostsz) {
+		if (at) {
+			hidx = at + 1;
+			hlen = end - hidx;
+			strncpy(host, hidx, MAX(hlen, hostsz));
+			host[hlen] = '\0';
+		}
+		else
+			host[0] = '\0';
+	}
+}
+
 
 /*
  * IRC commands
@@ -74,15 +116,6 @@ void ircproto_oper(char *oper_username, char *password)
 
 void ircproto_join(char *chan_name)
 {
-	if (chan_name[0] != '#') {
-		err("ircproto_join: channel missing # prefix: '%s'",
-			chan_name);
-		return;
-	}
-	if (strchr(chan_name, ',')) {
-		err("ircproto_join: won't join multiple channels: '%s'", chan_name);
-		return;
-	}
 	sock_sendline("JOIN %s", chan_name);
 }
 
@@ -131,4 +164,3 @@ void ircproto_mode(char *chan_name, char *modes)
 {
 	sock_sendline("MODE %s %s\n", chan_name, modes);
 }
-

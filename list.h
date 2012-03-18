@@ -90,43 +90,12 @@ static void list_del(struct list_head *entry)
 }
 
 /**
- * list_del_init - deletes entry from list and reinitialize it.
- * @entry: the element to delete from the list.
- */
-static void list_del_init(struct list_head *entry)
-{
-	__list_del(entry->prev, entry->next);
-	INIT_LIST_HEAD(entry); 
-}
-
-/**
  * list_empty - tests whether a list is empty
  * @head: the list to test.
  */
 static int list_empty(struct list_head *head)
 {
 	return head->next == head;
-}
-
-/**
- * list_splice - join two lists
- * @list: the new list to add.
- * @head: the place to add it in the first list.
- */
-static void list_splice(struct list_head *list, struct list_head *head)
-{
-	struct list_head *first = list->next;
-
-	if (first != list) {
-		struct list_head *last = list->prev;
-		struct list_head *at = head->next;
-
-		first->prev = head;
-		head->next = first;
-
-		last->next = at;
-		at->prev = last;
-	}
 }
 
 /**
@@ -145,5 +114,15 @@ static void list_splice(struct list_head *list, struct list_head *head)
  */
 #define list_for_each(pos, head) \
 	for (pos = (head)->next; pos != (head); pos = pos->next)
+
+/**
+ * list_for_each_safe - iterate over a list safe against removal of list entry
+ * @pos:	the &struct list_head to use as a loop cursor.
+ * @n:		another &struct list_head to use as temporary storage
+ * @head:	the head for your list.
+ */
+#define list_for_each_safe(pos, n, head) \
+	for (pos = (head)->next, n = pos->next; pos != (head); \
+		pos = n, n = pos->next)
 
 #endif

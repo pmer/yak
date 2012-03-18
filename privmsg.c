@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-
 #include "acl.h"
 #include "bool.h"
 #include "diagnostic.h"
@@ -86,4 +85,3 @@ void privmsg_init()
 	str_events = hashtab_create(str_hash, strcmp_hash,
 		PRIVMSG_CSTR_BUCKETS);
 }
-

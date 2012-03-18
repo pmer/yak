@@ -2,10 +2,10 @@
  * Implementation of the hash table type.
  *
  * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
+ *          Paul Merrill, <napalminc@gmail.com>
  */
 #include <stdlib.h>
 #include <string.h>
-
 #include "hashtab.h"
 
 struct hashtab *hashtab_create(unsigned (*hash_value)(struct hashtab *h, void *key),
@@ -15,7 +15,7 @@ struct hashtab *hashtab_create(unsigned (*hash_value)(struct hashtab *h, void *k
 	struct hashtab *p;
 	unsigned i;
 
-	p = calloc(1, sizeof(*p));
+	p = malloc(sizeof(*p));
 
 	p->size = size;
 	p->nel = 0;
@@ -45,18 +45,45 @@ int hashtab_insert(struct hashtab *h, void *key, void *datum)
 	if (cur && (h->keycmp(h, key, cur->key) == 0))
 		return -1;
 
-	newnode = calloc(1, sizeof(*newnode));
+	newnode = malloc(sizeof(*newnode));
 	newnode->key = key;
 	newnode->datum = datum;
 	if (prev) {
 		newnode->next = prev->next;
 		prev->next = newnode;
-	} else {
+	}
+	else {
 		newnode->next = h->htable[hvalue];
 		h->htable[hvalue] = newnode;
 	}
 
 	h->nel++;
+	return 0;
+}
+
+int hashtab_remove(struct hashtab *h, void *key)
+{
+	unsigned hvalue;
+	struct hashtab_node *prev, *cur;
+
+	hvalue = h->hash_value(h, key);
+	prev = NULL;
+	cur = h->htable[hvalue];
+	while (cur && h->keycmp(h, key, cur->key) > 0) {
+		prev = cur;
+		cur = cur->next;
+	}
+
+	if (!cur || (h->keycmp(h, key, cur->key) != 0))
+		return -1;
+
+	if (prev)
+		prev->next = cur->next;
+	else
+		h->htable[hvalue] = NULL;
+	free(cur);
+
+	h->nel--;
 	return 0;
 }
 
@@ -103,30 +130,6 @@ void hashtab_destroy(struct hashtab *h)
 	free(h);
 }
 
-int hashtab_map(struct hashtab *h,
-		int (*apply)(void *k, void *d, void *args),
-		void *args)
-{
-	unsigned i;
-	int ret;
-	struct hashtab_node *cur;
-
-	if (!h)
-		return 0;
-
-	for (i = 0; i < h->size; i++) {
-		cur = h->htable[i];
-		while (cur) {
-			ret = apply(cur->key, cur->datum, args);
-			if (ret)
-				return ret;
-			cur = cur->next;
-		}
-	}
-	return 0;
-}
-
-
 void hashtab_stat(struct hashtab *h, struct hashtab_info *info)
 {
 	unsigned i, chain_len, slots_used, max_chain_len;
@@ -166,4 +169,3 @@ int strcmp_hash(struct hashtab *h, void *a, void *b)
 {
 	return strcmp(a, b);
 }
-

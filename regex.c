@@ -1,6 +1,5 @@
 #include <pcre.h>
 #include <string.h>
-
 #include "diagnostic.h"
 #include "regex.h"
 
@@ -75,4 +74,3 @@ void regex_free(struct regex *re)
 	if (re->state == RCS_COMPILED)
 		pcre_free(re->re_detail);
 }
-

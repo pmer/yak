@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-
 #include "bool.h"
 #include "callback.h"
 #include "diagnostic.h"
@@ -77,14 +76,14 @@ void callback_emit_str(char *prefix, char *cmd, char *params)
 void callback_register_numeric(callback_numeric call, int ncmd)
 {
 	if (num_events[ncmd])
-		info("warn: overwriting numeric event %d", ncmd);
+		info("callback_register_numeric: %d: overwriting event", ncmd);
 	num_events[ncmd] = call;
 }
 
 void callback_register_str(callback_str call, char *cmd)
 {
 	if (hashtab_insert(str_events, cmd, call) == -1)
-		err("err: str event '%s' already exists", cmd);
+		err("callback_register_str: %s: event already exists", cmd);
 }
 
 /*
@@ -93,6 +92,6 @@ void callback_register_str(callback_str call, char *cmd)
 void callback_init()
 {
 	memset(num_events, 0, sizeof(num_events));
-	str_events = hashtab_create(str_hash, strcmp_hash, 15);
+	str_events = hashtab_create(str_hash, strcmp_hash, 31);
 	callback_register_str(handle_privmsg, "PRIVMSG");
 }

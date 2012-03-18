@@ -8,7 +8,7 @@ static void load_lib(char *usr, char *src, char *msg,
 {
 	char *lib;
 
-	if (!is_owner_nick(usr)) {
+	if (!acl_isowner(usr)) {
 		ircproto_privmsg(src, "err: not owner");
 		return;
 	}

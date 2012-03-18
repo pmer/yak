@@ -5,8 +5,11 @@
 
 struct chan {
 	struct list_head link;
-	char name[512]; /* includes hash prefix */
+	struct list_head presences;
+	char name[512]; /* includes channel prefix */
 };
+
+void chan_set_prefix(char *prefixes);
 
 /**
  * chan_init - initialize the channel subsystem
@@ -14,4 +17,3 @@ struct chan {
 void chan_init();
 
 #endif
-

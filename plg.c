@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "bool.h"
 #include "diagnostic.h"
 #include "list.h"
@@ -95,4 +94,3 @@ void plg_free_all()
 		free(p);
 	}
 }
-

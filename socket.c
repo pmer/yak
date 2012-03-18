@@ -1,9 +1,8 @@
 #include <netdb.h>      /* gethostbyname, other Internet functions */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>     /* memset */
+#include <string.h>
 #include <unistd.h>
-
 #include "bool.h"
 #include "diagnostic.h"
 #include "socket.h"
@@ -133,4 +132,3 @@ char *sock_readline()
 	printf("< %s\n", line);
 	return line;
 }
-

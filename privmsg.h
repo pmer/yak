@@ -3,7 +3,7 @@
 
 #include "regex.h"
 
-#define PRIVMSG_CSTR_BUCKETS 100
+#define PRIVMSG_CSTR_BUCKETS 31
 
 typedef void (*callback_privmsg_str)(char *usr, char *src, char *msg);
 typedef void (*callback_privmsg_re)(char *usr, char *src, char *msg,

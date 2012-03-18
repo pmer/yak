@@ -7,7 +7,7 @@
 
 static void make(char *usr, char *src, char *msg)
 {
-	if (!is_owner_nick(usr)) {
+	if (!acl_isowner(usr)) {
 		ircproto_privmsg(src, "err: not owner");
 		return;
 	}
