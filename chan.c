@@ -35,7 +35,6 @@ static struct chan *chan_find(char *chan_name)
 
 void chan_set_prefix(char *prefixes)
 {
-	info("CHANTYPES=%s", prefixes);
 	strcpy(chantypes, prefixes);
 }
 

@@ -41,7 +41,6 @@ void acl_set_prefix(char *modes, char *prefixes)
 	char *mode, *prefix;
 	enum priv priv;
 
-	info("PREFIX=(%s)%s", modes, prefixes);
 	memset(modetab, 0, sizeof(modetab));
 	memset(prefixtab, 0, sizeof(modetab));
 

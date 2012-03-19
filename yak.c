@@ -55,6 +55,9 @@ int main()
 	info("loading plugins from plugins.txt");
 	plg_load_plgs_from("plugins.txt");
 
+	mutex_off();
+	nthreads--;
+
 	/* maybe something drastic happened during startup */
 	if (want_quit)
 		goto shutdown;
@@ -67,9 +70,6 @@ int main()
 		ircproto_identify(nickservnick, bot_identify);
 	if (bot_oper_name && bot_oper_pw)
 		ircproto_oper(bot_oper_name, bot_oper_pw);
-
-	mutex_off();
-	nthreads--;
 
 	while (!want_quit) {
 		ircproto_read_message(&prefix, &cmd, &ncmd, &params);

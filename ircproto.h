@@ -5,19 +5,23 @@
 
 /*
  * Numeric commands.
- * 001-099 are client-server specific IRC commands
- * 200-399 are server responses to client commands
+ * 001-099 are client => server commands
+ * 200-399 are server => client responses
+ * 400-499 are error messages
  */
 #define RPL_WELCOME          1 /* our name */
 #define RPL_YOURHOST         2 /* server name, server version */
 #define RPL_CREATED          3 /* server start date/time */
 #define RPL_MYINFO           4 /* info about the server */
 #define RPL_ISUPPORT         5 /* info about server technicalities */
+#define RPL_LUSERCLIENT    251 /* numbers of users on IRC network */
 #define RPL_NAMREPLY       353 /* partial list of nicknames in a channel */
 #define RPL_ENDOFNAMES     366 /* end of NAMES reply */
 #define ERR_UNKNOWNCOMMAND 421 /* server does not know a command we sent */
 #define ERR_NICKNAMEINUSE  433 /* our requested nick is already taken */
 #define ERR_YOUREBANNED    465 /* we are banned from the server */
+
+#define RPL_LOGGEDIN RPL_LUSERCLIENT /* we've finished logging in */
 
 void ircproto_parse_message(char *msg, char **prefix, char **cmd, int *ncmd,
 	char **params);

@@ -8,6 +8,7 @@
 #include "socket.h"
 #include "thread.h"
 #include "../eval/eval.h"
+#include "../loggedin/loggedin.h"
 
 /* fails if before stdio.h ?? */
 #include <readline/readline.h>
@@ -37,22 +38,26 @@ static void *uimain(void *unused)
 {
 	char *line;
 
-	/* wait for startup to finish */
-	mutex_on();
-	mutex_off();
-
-	sleep(2);
-
 	while (line = readline("> ")) {
+		mutex_on();
 		eval_emit(line);
+		mutex_off();
 		free(line);
 	}
-	want_quit = true;
+	printf("\n");
+	safe_shutdown_and_die(0);
+}
+
+static void create_uithread()
+{
+	pthread_t thread;
+
+	nthreads++;
+	pthread_create(&thread, NULL, uimain, NULL);
 }
 
 int init()
 {
-	pthread_t thread;
 	FILE *newsocklog;
 
 	/* redirect socklog so the terminal remains relatively uncluttered */
@@ -66,8 +71,7 @@ int init()
 	eval_register(cd, "^cd (\\S+)(.*)?");
 	eval_register(say, ".");
 
-	nthreads++;
-	pthread_create(&thread, NULL, uimain, NULL);
+	onlogin(create_uithread);
 	return 0;
 }
 
