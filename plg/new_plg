@@ -47,7 +47,6 @@ clean:
 
 \$(SO): \$(OBJS)
 	\$(CC) -o \$(SO) \$(OBJS) \$(LDFLAGS)
-
 EOF
 
 
@@ -67,5 +66,4 @@ int init()
 void finish()
 {
 }
-
 EOF

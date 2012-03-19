@@ -1,6 +1,6 @@
-OPT=-g
-CFLAGS = -std=gnu99 $(OPT) $(BLDCFLAGS)
-LDFLAGS = -lpcre -ldl -rdynamic $(OPT) $(BLDCFLAGS)
+OPT = -g
+CFLAGS := -std=gnu99 -pthread $(OPT) $(CFLAGS)
+LDFLAGS := -lpcre -pthread -ldl -rdynamic $(OPT) $(LDFLAGS)
 
 OBJECTS = \
 	acl.o \
@@ -14,6 +14,7 @@ OBJECTS = \
 	privmsg.o \
 	regex.o \
 	socket.o \
+	thread.o \
 	usr.o \
 	yak.o \
 

@@ -4,3 +4,6 @@ isupport
 make
 ping
 quit
+
+eval
+ui

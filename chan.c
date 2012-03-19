@@ -12,7 +12,7 @@ static LIST_HEAD(chans);
 
 static char chantypes[20] = "#&";
 
-static void chan_track_start(char *chan_name)
+static void chan_new(char *chan_name)
 {
 	struct chan *chan = malloc(sizeof(struct chan));
 	strcpy(chan->name, chan_name);
@@ -50,7 +50,7 @@ static void handle_join(char *prefix, char *cmd, char *params)
 
 	chan_name = strpbrk(params, chantypes);
 	if (isme(prefix)) {
-		chan_track_start(chan_name);
+		chan_new(chan_name);
 	}
 	else {
 		chan = chan_find(chan_name);
@@ -95,7 +95,7 @@ static void handle_names(char *prefix, int ncmd, char *params)
 	*space = '\0';
 	chan = chan_find(chan_name);
 	for (nick = strtok(nicks, " "); nick; nick = strtok(NULL, " ")) {
-		/* possible list of privs */
+		/* XXX: possibly a list of privs */
 		priv = prefix2priv(nick[0]);
 		if (priv != PRIV_NONE)
 			nick++;

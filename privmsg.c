@@ -12,7 +12,7 @@
 /*
  * Callback data structure.
  */
-struct reevent {
+struct re_event {
 	struct list_head link;
 	callback_privmsg_re call;
 	struct regex match;
@@ -26,7 +26,7 @@ static struct hashtab *str_events;
 /**
  * re_events - list of regular expression events that we will listen for
  */
-struct list_head revents_head = LIST_HEAD_INIT(revents_head);
+static LIST_HEAD(re_events);
 
 
 /*
@@ -36,7 +36,7 @@ void callback_emit_privmsg(char *usr, char *src, char *msg)
 {
 	callback_privmsg_str call;
 	struct list_head *list;
-	struct reevent *rev;
+	struct re_event *rev;
 	int matches, ncap, i;
 
 	static char *caps[REGEX_MAX_CAPTURES];
@@ -56,8 +56,8 @@ void callback_emit_privmsg(char *usr, char *src, char *msg)
 		call(usr, src, msg);
 
 	/* regex events */
-	list_for_each(list, &revents_head) {
-		rev = list_entry(list, struct reevent, link);
+	list_for_each(list, &re_events) {
+		rev = list_entry(list, struct re_event, link);
 		matches = regex_match(&rev->match, msg, caps);
 		ncap = matches - 1;
 		if (ncap >= 0)
@@ -73,11 +73,11 @@ void callback_register_privmsg_str(callback_privmsg_str call, char *str)
 
 void callback_register_privmsg_re(callback_privmsg_re call, char *pattern)
 {
-	struct reevent *e = malloc(sizeof(struct reevent));
+	struct re_event *e = malloc(sizeof(struct re_event));
 	e->call = call;
 	e->match.pattern = pattern;
 	e->match.state = RCS_UNINIT;
-	list_add(&e->link, &revents_head);
+	list_add(&e->link, &re_events);
 }
 
 void privmsg_init()

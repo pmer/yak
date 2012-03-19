@@ -34,6 +34,7 @@ static bool pdlerror()
 void plg_load_plgs_from(char *filename)
 {
 	FILE *f = fopen(filename, "r");
+	int len;
 	char line[256];
 
 	if (!f) {
@@ -41,8 +42,10 @@ void plg_load_plgs_from(char *filename)
 		return;
 	}
 	while (fgets(line, sizeof(line), f)) {
-		line[strlen(line) - 1] = '\0'; /* rm trailing '\n' */
-		plg_load(line);
+		len = strlen(line);
+		line[len-- - 1] = '\0'; /* chop trailing '\n' */
+		if (len)
+			plg_load(line);
 	}
 	fclose(f);
 

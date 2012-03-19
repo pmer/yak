@@ -11,8 +11,8 @@ static struct hashtab *users;
 
 bool isme(char *prefix)
 {
-	/* To verify identity only have to test nickname, that is enough. No
-	 * need to look at username or host. */
+	/* To verify identity, we only have to test nickname, that is enough.
+	 * No need to look at username or host. */
 	char *bang;
 	int len;
 
@@ -47,7 +47,6 @@ static struct user *user_new(char *prefix)
 		user->host,  sizeof(user->host));
 	user->rname[0] = '\0';
 	INIT_LIST_HEAD(&user->presences);
-	info("user_new: %s", user->nick);
 	if (hashtab_insert(users, user->nick, user) == -1)
 		err("user_new: %s: user already exists", user->nick);
 	return user;

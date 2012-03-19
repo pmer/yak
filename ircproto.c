@@ -4,7 +4,7 @@
 #include "diagnostic.h"
 #include "socket.h"
 
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 void ircproto_parse_message(char *msg, char **prefix, char **cmd,
 		int *ncmd, char **params)
@@ -50,35 +50,45 @@ void ircproto_parse_prefix(char *prefix,
                   char *host, int hostsz)
 {
 	char *bang, *at, *end, *uidx, *hidx;
-	int nlen, ulen, hlen;
+	int nlen, ulen, hlen; /* len of values held in prefix */
+	int ncpy, ucpy, hcpy; /* maximum able to copy, ideally == len */
 
 	bang = strchr(prefix, '!');
 	at = strchr(prefix, '@');
 	end = prefix + strlen(prefix);
 
-	if (nicksz) {
+	if (nick) {
 		nlen = bang ? bang - prefix : end - prefix;
-		strncpy(nick, prefix, MAX(nlen, nicksz));
-		nick[nlen] = '\0';
+		ncpy = MIN(nlen, nicksz - 1);
+		strncpy(nick, prefix, ncpy);
+		nick[ncpy] = '\0';
+		if (ncpy != nlen)
+			info("parse_prefix: %s: nick overflow", nick);
 	}
 
-	if (usersz) {
+	if (user) {
 		if (bang) {
 			uidx = bang + 1;
 			ulen = at - uidx;
-			strncpy(user, uidx, MAX(ulen, usersz));
-			user[ulen] = '\0';
+			ucpy = MIN(ulen, usersz - 1);
+			strncpy(user, uidx, ucpy);
+			user[ucpy] = '\0';
+			if (ucpy != ulen)
+				info("parse_prefix: %s: uname overflow", user);
 		}
 		else
 			user[0] = '\0';
 	}
 
-	if (hostsz) {
+	if (host) {
 		if (at) {
 			hidx = at + 1;
 			hlen = end - hidx;
-			strncpy(host, hidx, MAX(hlen, hostsz));
-			host[hlen] = '\0';
+			hcpy = MIN(hlen, hostsz - 1);
+			strncpy(host, hidx, hcpy);
+			host[hcpy] = '\0';
+			if (hcpy != hlen)
+				info("parse_prefix: %s: host overflow", host);
 		}
 		else
 			host[0] = '\0';

@@ -1,5 +1,4 @@
 #include <netdb.h>      /* gethostbyname, other Internet functions */
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -10,6 +9,7 @@
 #define IRC_MSG_MAX_LEN 512 /* defined in RFC 2818 2.3.1 */
 
 static int sock;
+FILE *socklog;
 
 void establish_connection(char *host, int port)
 {
@@ -59,11 +59,12 @@ void sock_sendline(char *format, ...)
 	char buffer[IRC_MSG_MAX_LEN];
 
 	/* log */
-	printf("> ");
+	fprintf(socklog, "> ");
 	va_start(args, format);
-	vprintf(format, args);
+	vfprintf(socklog, format, args);
 	va_end(args);
-	putchar('\n');
+	putc('\n', socklog);
+	fflush(socklog);
 
 	/* send */
 	va_start(args, format);
@@ -129,6 +130,12 @@ char *sock_readline()
 	}
 
 	line[i-1] = '\0';
-	printf("< %s\n", line);
+	fprintf(socklog, "< %s\n", line);
+	fflush(socklog);
 	return line;
+}
+
+void sock_init()
+{
+	socklog = stdout;
 }

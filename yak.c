@@ -11,6 +11,7 @@
 #include "plg.h"
 #include "privmsg.h"
 #include "socket.h"
+#include "thread.h"
 #include "usr.h"
 
 /*
@@ -40,7 +41,12 @@ int main()
 	char *prefix, *cmd, *params;
 	int ncmd, i;
 
+	/* lock the global mutex during program startup */
+	nthreads++;
+	mutex_on();
+
 	callback_init();
+	sock_init();
 	usr_init();
 	chan_init();
 	acl_init();
@@ -49,8 +55,9 @@ int main()
 	info("loading plugins from plugins.txt");
 	plg_load_plgs_from("plugins.txt");
 
+	/* maybe something drastic happened during startup */
 	if (want_quit)
-		return 0;
+		goto shutdown;
 
 	establish_connection(host, port);
 
@@ -61,8 +68,12 @@ int main()
 	if (bot_oper_name && bot_oper_pw)
 		ircproto_oper(bot_oper_name, bot_oper_pw);
 
+	mutex_off();
+	nthreads--;
+
 	while (!want_quit) {
 		ircproto_read_message(&prefix, &cmd, &ncmd, &params);
+		mutex_on();
 		if (ncmd)
 			callback_emit_numeric(prefix, ncmd, params);
 		else
@@ -73,8 +84,11 @@ int main()
 			for (i = 0; i < bot_channelcount; i++)
 				ircproto_join(bot_channels[i]);
 		}
+		mutex_off();
 	}
 
+shutdown:
+	mutex_on();
 	safe_shutdown();
 	return 0;
 }

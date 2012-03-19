@@ -25,9 +25,9 @@ void ircproto_read_message(char **prefix, char **cmd, int *ncmd,
 	char **params);
 
 void ircproto_parse_prefix(char *prefix,
-                  char *nick, int nicksz,
-                  char *user, int usersz,
-                  char *host, int hostsz);
+	char *nick, int nicksz,
+	char *user, int usersz,
+	char *host, int hostsz);
 
 void ircproto_pong(char *id);
 void ircproto_nick(char *nick);
@@ -42,4 +42,3 @@ void ircproto_kick(char *chan_name, char *nick, char *format, ...);
 void ircproto_mode(char *chan_name, char *modes);
 
 #endif
-
