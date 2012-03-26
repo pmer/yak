@@ -15,12 +15,13 @@ struct re_event {
 static LIST_HEAD(events);
 
 
-void eval_emit(char *line)
+bool eval_emit(char *line)
 {
 	eval_callback call;
 	struct list_head *node;
 	struct re_event *rev;
 	int matches, ncap, i;
+	bool called = false;
 
 	static char *caps[REGEX_MAX_CAPTURES];
 	static char caps_buf[512 * REGEX_MAX_CAPTURES];
@@ -37,9 +38,13 @@ void eval_emit(char *line)
 		rev = list_entry(node, struct re_event, link);
 		matches = regex_match(&rev->match, line, caps);
 		ncap = matches - 1;
-		if (ncap >= 0)
+		if (ncap >= 0) {
 			rev->call(line, caps, ncap);
+			called = true;
+		}
 	}
+
+	return called;
 }
 
 void eval_register(eval_callback call, char *pattern)

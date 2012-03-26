@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "acl.h"
+#include "access.h"
 #include "bool.h"
 #include "callback.h"
 #include "chan.h"
@@ -49,7 +49,7 @@ int main()
 	sock_init();
 	usr_init();
 	chan_init();
-	acl_init();
+	access_init();
 	privmsg_init();
 
 	info("loading plugins from plugins.txt");

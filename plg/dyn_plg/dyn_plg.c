@@ -1,4 +1,4 @@
-#include "acl.h"
+#include "access.h"
 #include "ircproto.h"
 #include "plg.h"
 #include "privmsg.h"
@@ -8,7 +8,7 @@ static void load_lib(char *usr, char *src, char *msg,
 {
 	char *lib;
 
-	if (!acl_isowner(usr)) {
+	if (!access_isowner(usr)) {
 		ircproto_privmsg(src, "err: not owner");
 		return;
 	}
@@ -32,4 +32,3 @@ int init()
 void finish()
 {
 }
-

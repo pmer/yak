@@ -1,5 +1,5 @@
 #include <string.h>
-#include "acl.h"
+#include "access.h"
 #include "bool.h"
 #include "diagnostic.h"
 #include "presence.h"
@@ -18,7 +18,7 @@ enum priv prefix2priv(char prefix)
 	return prefixtab[prefix];
 }
 
-bool acl_isowner(char *usr)
+bool access_isowner(char *usr)
 {
 	int i;
 	int len;
@@ -36,7 +36,7 @@ bool acl_isowner(char *usr)
 	return false;
 }
 
-void acl_set_prefix(char *modes, char *prefixes)
+void access_set_prefix(char *modes, char *prefixes)
 {
 	char *mode, *prefix;
 	enum priv priv;
@@ -54,7 +54,7 @@ void acl_set_prefix(char *modes, char *prefixes)
 	}
 }
 
-void acl_init()
+void access_init()
 {
-	acl_set_prefix("ov", "@+");
+	access_set_prefix("ov", "@+");
 }

@@ -1,13 +1,13 @@
 #include <stdlib.h>
 
-#include "acl.h"
+#include "access.h"
 #include "callback.h"
 #include "diagnostic.h"
 #include "ircproto.h"
 
 static void make(char *usr, char *src, char *msg)
 {
-	if (!acl_isowner(usr)) {
+	if (!access_isowner(usr)) {
 		ircproto_privmsg(src, "err: not owner");
 		return;
 	}
@@ -26,4 +26,3 @@ int init()
 void finish()
 {
 }
-

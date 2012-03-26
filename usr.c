@@ -76,6 +76,15 @@ struct user *user_get(char *prefix)
 	return user ? user : user_new(prefix);
 }
 
+struct user *user_get2(char *prefix, bool *existed)
+{
+	struct user *user;
+
+	user = user_find(prefix);
+	*existed = user != NULL;
+	return user ? user : user_new(prefix);
+}
+
 void usr_init()
 {
 	users = hashtab_create(str_hash, strcmp_hash, 101);

@@ -7,8 +7,8 @@
 #include "ircproto.h"
 #include "socket.h"
 #include "thread.h"
-#include "../eval/eval.h"
-#include "../loggedin/loggedin.h"
+#include "plg/eval/eval.h"
+#include "plg/loggedin/loggedin.h"
 
 /* fails if before stdio.h ?? */
 #include <readline/readline.h>
@@ -17,21 +17,28 @@ static char chan[512] = "";
 
 static void cd(char *line, char **caps, int ncaps)
 {
-	if (ncaps > 1 && caps[1][0])
+	if (ncaps > 1 && *caps[1])
 		info("cd: must have one argument");
 	strcpy(chan, caps[0]);
 }
 
-static void say(char *line, char **caps, int ncaps)
+static void quit(char *line, char **caps, int ncaps)
 {
-	int len = strlen(line);
+	safe_shutdown_and_die(0);
+}
 
-	if (len > 1 && line[0] == 'c' && line[1] == 'd')
-		return;
+static void say(char *line)
+{
 	if (*chan)
 		ircproto_privmsg(chan, "%s", line);
 	else
-		info("say: must 'cd' into a channel first");
+		info("please 'cd' into a channel first");
+}
+
+static void eval(char *line)
+{
+	if (!eval_emit(line))
+		say(line);
 }
 
 static void *uimain(void *unused)
@@ -40,7 +47,7 @@ static void *uimain(void *unused)
 
 	while (line = readline("> ")) {
 		mutex_on();
-		eval_emit(line);
+		eval(line);
 		mutex_off();
 		free(line);
 	}
@@ -69,7 +76,7 @@ int init()
 	socklog = newsocklog;
 
 	eval_register(cd, "^cd (\\S+)(.*)?");
-	eval_register(say, ".");
+	eval_register(quit, "^quit$");
 
 	onlogin(create_uithread);
 	return 0;

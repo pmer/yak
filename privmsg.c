@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include "acl.h"
 #include "bool.h"
 #include "diagnostic.h"
 #include "hashtab.h"

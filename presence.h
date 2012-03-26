@@ -32,5 +32,7 @@ struct presence *presence_new(struct chan *chan, struct user *user);
 void presence_del(struct presence *pres);
 struct presence *presence_find(struct chan *chan, struct user *user);
 struct presence *presence_get(struct chan *chan, struct user *user);
+struct presence *presence_get3(struct chan *chan, struct user *user,
+	bool *existed);
 
 #endif

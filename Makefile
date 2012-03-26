@@ -3,7 +3,7 @@ CFLAGS := -std=gnu99 -pthread $(OPT) $(CFLAGS)
 LDFLAGS := -lpcre -pthread -ldl -rdynamic $(OPT) $(LDFLAGS)
 
 OBJECTS = \
-	acl.o \
+	access.o \
 	callback.o \
 	chan.o \
 	diagnostic.o \

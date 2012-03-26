@@ -22,6 +22,9 @@ struct plg {
 static LIST_HEAD(plgs);
 
 
+/**
+ * pdlerror - print dlerror
+ */
 static bool pdlerror()
 {
 	char *errmsg = dlerror();
@@ -54,46 +57,71 @@ void plg_load_plgs_from(char *filename)
 
 void plg_load(char *plg_name)
 {
-	struct plg *p = malloc(sizeof(struct plg));
+	struct plg *plg = malloc(sizeof(struct plg));
 
-	info("loading plugin: %s", plg_name);
-	strcpy(p->name, plg_name);
-	snprintf(p->file, sizeof(p->file), "plg/%s/%s.so",
+	strncpy(plg->name, plg_name, sizeof(plg->name));
+	snprintf(plg->file, sizeof(plg->file), "plg/%s/%s.so",
 		plg_name, plg_name);
-	p->so = dlopen(p->file, RTLD_NOW | RTLD_GLOBAL);
+	plg->so = dlopen(plg->file, RTLD_NOW | RTLD_GLOBAL);
 	if (pdlerror())
 		goto err;
-	p->init = dlsym(p->so, "init");
+	plg->init = dlsym(plg->so, "init");
 	if (pdlerror())
 		goto err;
-	p->finish = dlsym(p->so, "finish");
+	plg->finish = dlsym(plg->so, "finish");
 	if (pdlerror())
 		goto err;
-	if (p->init()) {
+	if (plg->init()) {
 		err("plg->init(): failed: %s", plg_name);
 		goto err;
 	}
-	list_add(&p->link, &plgs);
+	list_add(&plg->link, &plgs);
 	return;
 
 err:
-	free(p);
+	free(plg);
+}
+
+static struct plg *plg_find(char *plg_name)
+{
+	struct list_head *list;
+	struct plg *plg;
+
+	list_for_each(list, &plgs) {
+		plg = list_entry(list, struct plg, link);
+		if (!strncmp(plg_name, plg->name, sizeof(plg->name)))
+			return plg;
+	}
+	err("plg_find: %s: not found", plg_name);
+	return NULL;
+}
+
+void *plg_sym(char *plg_name, char *symbol)
+{
+	struct plg *plg;
+	void *addr;
+
+	plg = plg_find(plg_name);
+	if (plg) {
+		addr = dlsym(plg->so, symbol);
+		pdlerror();
+		return addr;
+	}
+	else {
+		return NULL;
+	}
 }
 
 void plg_free_all()
 {
 	struct list_head *list, *next;
-	struct plg *p;
+	struct plg *plg;
 
-	list_for_each(list, &plgs) {
-		p = list_entry(list, struct plg, link);
-		p->finish();
-		dlclose(p->so);
+	list_for_each_safe(list, next, &plgs) {
+		plg = list_entry(list, struct plg, link);
+		plg->finish();
+		dlclose(plg->so);
 		pdlerror();
-	}
-	for (list = &plgs; list != &plgs; list = next) {
-		p = list_entry(list, struct plg, link);
-		next = list->next;
-		free(p);
+		free(plg);
 	}
 }

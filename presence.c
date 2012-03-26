@@ -48,3 +48,13 @@ struct presence *presence_get(struct chan *chan, struct user *user)
 	pres = presence_find(chan, user);
 	return pres ? pres : presence_new(chan, user);
 }
+
+struct presence *presence_get3(struct chan *chan, struct user *user,
+	bool *existed)
+{
+	struct presence *pres;
+
+	pres = presence_find(chan, user);
+	*existed = pres != NULL;
+	return pres ? pres : presence_new(chan, user);
+}

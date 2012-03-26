@@ -10,6 +10,7 @@ struct user {
 	char uname[512];
 	char rname[512];
 	struct list_head presences;
+	bool reg, netop;
 };
 
 /**
@@ -40,6 +41,16 @@ struct user *user_find(char *prefix);
  *           "nickname[!username[@host]]"
  */
 struct user *user_get(char *prefix);
+
+/**
+ * user_get2 - find preexisting or create new struct user
+ *
+ * @prefix - IRC message prefix, in the format of:
+ *           "nickname[!username[@host]]"
+ * @existed - set to true if the user already existed,
+ *            false otherwise
+ */
+struct user *user_get2(char *prefix, bool *existed);
 
 /**
  * usr_init - initialize the user subsystem
