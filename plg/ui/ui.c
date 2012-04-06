@@ -21,10 +21,11 @@ static void cd(char *line, char **caps, int ncaps)
 	if (ncaps > 1 && *caps[1])
 		info("cd: must have one argument");
 	
-	char *infostr = malloc(17 + strlen(caps[0]));
+	char *infostr = malloc(16 + strlen(caps[0]));
 	strcpy(infostr, "now talking on ");
 	strcat(infostr, caps[0]);
 	info(infostr);
+	free(infostr);
 	
 	strcpy(chan, caps[0]);
 }
