@@ -38,6 +38,11 @@ static void nick(char *line, char **caps, int ncaps)
 	ircproto_nick(bot_nick = caps[0]);
 }
 
+static void msg(char *line, char **caps, int ncaps)
+{
+	ircproto_privmsg(caps[0], "%s", caps[1]);
+}
+
 static void quit(char *line, char **caps, int ncaps)
 {
 	safe_shutdown_and_die(0);
@@ -48,13 +53,7 @@ static void say(char *line)
 	if (*chan)
 		ircproto_privmsg(chan, "%s", line);
 	else
-		info("please 'cd' into a channel first");
-}
-
-static void eval(char *line)
-{
-	if (!eval_emit(line))
-		say(line);
+		info("please '/cd' into a channel first");
 }
 
 static void *uimain(void *unused)
@@ -63,7 +62,17 @@ static void *uimain(void *unused)
 
 	while (line = readline("> ")) {
 		mutex_on();
-		eval(line);
+		if(line[0] == '/') {
+			if (!eval_emit(line + 1)) {
+				char *infostr = malloc(18 + strlen(line));
+				strcpy(infostr, "invalid command: ");
+				strcat(infostr, line);
+				info(infostr);
+				free(infostr);
+			}
+		} else {
+			say(line);
+		}
 		mutex_off();
 		free(line);
 	}
@@ -93,12 +102,16 @@ int init()
 
 	eval_register(cd, "^cd (\\S+)(.*)?");
 	eval_register(nick, "^nick (\\S+)(.*)?");
+	eval_register(msg, "^msg (\\S+) (.*)");
 	eval_register(quit, "^quit$");
 
 	onlogin(create_uithread);
+	
 	return 0;
 }
 
 void finish()
 {
+
 }
+
