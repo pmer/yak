@@ -6,5 +6,8 @@ make
 ping
 quit
 
+ctcp
+ctcp_ping
+
 eval
-ui
+#ui
