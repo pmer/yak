@@ -21,11 +21,7 @@ static void cd(char *line, char **caps, int ncaps)
 	if (ncaps > 1 && *caps[1])
 		info("cd: must have one argument");
 	
-	char *infostr = malloc(16 + strlen(caps[0]));
-	strcpy(infostr, "now talking on ");
-	strcat(infostr, caps[0]);
-	info(infostr);
-	free(infostr);
+	info("now talking on %s", caps[0]);
 	
 	strcpy(chan, caps[0]);
 }
@@ -64,11 +60,7 @@ static void *uimain(void *unused)
 		mutex_on();
 		if(line[0] == '/') {
 			if (!eval_emit(line + 1)) {
-				char *infostr = malloc(18 + strlen(line));
-				strcpy(infostr, "invalid command: ");
-				strcat(infostr, line);
-				info(infostr);
-				free(infostr);
+				info("invalid command: %s", line);
 			}
 		} else {
 			say(line);
