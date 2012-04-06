@@ -47,7 +47,7 @@ void plg_load_plgs_from(char *filename)
 	while (fgets(line, sizeof(line), f)) {
 		len = strlen(line);
 		line[len-- - 1] = '\0'; /* chop trailing '\n' */
-		if (len)
+		if (len && line[0] != '#')
 			plg_load(line);
 	}
 	fclose(f);
