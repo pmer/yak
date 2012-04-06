@@ -19,11 +19,11 @@ bool isme(char *prefix)
 	bang = strchr(prefix, '!');
 	if (bang) {
 		len = bang - prefix;
-		return !strncmp(prefix, bot_nick, len) &&
+		return !strncasecmp(prefix, bot_nick, len) &&
 			strlen(bot_nick) == len;
 	}
 	else {
-		return !strcmp(prefix, bot_nick);
+		return !strcasecmp(prefix, bot_nick);
 	}
 }
 

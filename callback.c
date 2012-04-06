@@ -24,7 +24,7 @@ static void handle_privmsg(char *usr, char *cmd, char *src_and_msg)
 	*spc = '\0';
 	src = src_and_msg;
 	msg = spc + 2; /* space, colon */
-	if (!strncmp(src, bot_nick, strlen(bot_nick))) {
+	if (!strncasecmp(src, bot_nick, strlen(bot_nick))) {
 		/* Receiving a private query. Strip the source down to just the
 		 * username. */
 		if (strchr(usr, '!')) {

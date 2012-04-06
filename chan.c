@@ -29,7 +29,7 @@ static struct chan *chan_find(char *chan_name)
 
 	list_for_each(pos, &chans) {
 		chan = list_entry(pos, struct chan, link);
-		if (!strcmp(chan->name, chan_name))
+		if (!strcasecmp(chan->name, chan_name))
 			return chan;
 	}
 	return NULL;

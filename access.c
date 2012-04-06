@@ -30,7 +30,7 @@ bool access_isowner(char *usr)
 
 	for (i = 0; i < bot_ownercount; i++) {
 		owner = bot_owners[i];
-		if (!strncmp(usr, owner, len) && strlen(owner) == len)
+		if (!strncasecmp(usr, owner, len) && strlen(owner) == len)
 			return true;
 	}
 	return false;
