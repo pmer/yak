@@ -146,6 +146,18 @@ void ircproto_privmsg(char *recipient, char *format, ...)
 	sock_sendline("PRIVMSG %s :%s", recipient, message);
 }
 
+void ircproto_notice(char *recipient, char *format, ...)
+{
+	va_list args;
+	char message[512];
+
+	va_start(args, format);
+	vsnprintf(message, sizeof(message), format, args);
+	va_end(args);
+
+	sock_sendline("NOTICE %s :%s", recipient, message);
+}
+
 void ircproto_topic(char *chan_name, char *format, ...)
 {
 	va_list args;
