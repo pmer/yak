@@ -31,7 +31,8 @@ static void nick(char *line, char **caps, int ncaps)
 	if (ncaps > 1 && *caps[1])
 		info("nick: must have one argument");
 	
-	ircproto_nick(bot_nick = caps[0]);
+	strcpy(bot_nick, caps[0]);
+	ircproto_nick(caps[0]);
 }
 
 static void msg(char *line, char **caps, int ncaps)
