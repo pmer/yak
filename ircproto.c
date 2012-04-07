@@ -155,7 +155,7 @@ void ircproto_topic(char *chan_name, char *format, ...)
 	vsnprintf(topic, sizeof(topic), format, args);
 	va_end(args);
 
-	sock_sendline("TOPIC %s :%s\n", chan_name, topic);
+	sock_sendline("TOPIC %s :%s", chan_name, topic);
 }
 
 void ircproto_kick(char *chan_name, char *nick, char *format, ...)
@@ -167,10 +167,10 @@ void ircproto_kick(char *chan_name, char *nick, char *format, ...)
 	vsnprintf(message, sizeof(message), format, args);
 	va_end(args);
 
-	sock_sendline("KICK %s %s :%s\n", chan_name, nick, message);
+	sock_sendline("KICK %s %s :%s", chan_name, nick, message);
 }
 
 void ircproto_mode(char *chan_name, char *modes)
 {
-	sock_sendline("MODE %s %s\n", chan_name, modes);
+	sock_sendline("MODE %s %s", chan_name, modes);
 }
