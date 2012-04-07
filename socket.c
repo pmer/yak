@@ -45,7 +45,7 @@ void establish_connection(char *host, char *port)
 
 	if (p == NULL) {
 		/* connection failed */
-		fprintf(stderr, "failed to connect\n");
+		err("connection failed");
 		safe_shutdown_and_die(1);
 	}
 
