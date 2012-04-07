@@ -16,7 +16,7 @@
 #include "usr.h"
 
 char *host;
-int port;
+char *port;
 
 char bot_nick[512];
 char *bot_user;
@@ -31,11 +31,11 @@ char **bot_owners;
 
 static void load_whoiam()
 {
-	char *port_str, *owners_str, *chan_str, *tok;
+	char *owners_str, *chan_str, *tok;
 	int i;
 
 	host = pref_get("host");
-	port_str = pref_get("port");
+	port = pref_get("port");
 	strcpy(bot_nick, pref_get("nick"));
 	bot_user = pref_get("user");
 	bot_real = pref_get("real");
@@ -45,8 +45,6 @@ static void load_whoiam()
 	bot_oper_pw = pref_get("oper-pw");
 	owners_str = pref_get("owners");
 	chan_str = pref_get("channels");
-
-	sscanf(port_str, "%d", &port);
 
 	bot_owners = NULL;
 	for (i = 0, tok = strtok(owners_str, " "); tok; i++, tok = strtok(NULL, " ")) {

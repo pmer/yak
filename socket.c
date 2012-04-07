@@ -1,4 +1,4 @@
-#include <netdb.h>      /* gethostbyname, other Internet functions */
+#include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -11,40 +11,46 @@
 static int sock;
 FILE *socklog;
 
-void establish_connection(char *host, int port)
+void establish_connection(char *host, char *port)
 {
-	struct sockaddr_in addr;
-	struct hostent *he;
+	struct addrinfo hints, *servinfo, *p;
+	int rv;
+	
+	info("connecting to irc://%s:%s", host, port);
 
-	info("connecting to irc://%s:%d", host, port);
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
 
-	/* FIXME
-	 * The gethostby* calls are obsolete since 2001.
-	 * Use getaddrinfo instead.
-	 */
-	he = gethostbyname(host);
-	if (!he) {
-		perror("gethostbyname");
-		safe_shutdown_and_die(1);
-	}
-	endhostent();
-
-	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
-		perror("socket");
+	rv = getaddrinfo(host, port, &hints, &servinfo);
+	if (rv != 0) {
+		err("getaddrinfo: %s", gai_strerror(rv));
 		safe_shutdown_and_die(1);
 	}
 
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_addr = *(struct in_addr*)he->h_addr_list[0];
-	addr.sin_port = htons(port);
-	if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-		perror("connect");
+	for(p = servinfo; p != NULL; p = p->ai_next) {
+		if ((sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+			perror("socket");
+			continue;
+		}
+
+		if (connect(sock, p->ai_addr, p->ai_addrlen) == -1) {
+			close(sock);
+			perror("connect");
+			continue;
+		}
+
+		break;
+	}
+
+	if (p == NULL) {
+		/* connection failed */
+		fprintf(stderr, "failed to connect\n");
 		safe_shutdown_and_die(1);
 	}
 
 	info("connected");
-
+	freeaddrinfo(servinfo);
 	add_shutdown_fn(close_connection);
 }
 
