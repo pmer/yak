@@ -30,7 +30,7 @@ bool auth_isowner(char *usr)
 
 	for (owners = bot_owners; *owners; owners++) {
 		owner = *owners;
-		if (!strncmp(usr, owner, len) && strlen(owner) == len)
+		if (!strncasecmp(usr, owner, len) && strlen(owner) == len)
 			return true;
 	}
 	return false;

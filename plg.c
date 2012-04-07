@@ -46,7 +46,7 @@ void plg_load_plgs_from(char *filename)
 	}
 	while (fgets(line, sizeof(line), f)) {
 		chomp(line);
-		if (*line)
+		if (*line && *line != '#')
 			plg_load(line);
 	}
 	fclose(f);

@@ -6,5 +6,12 @@ make
 ping
 quit
 
+ctcp
+ctcp_ping
+ctcp_version
+
 eval
-ui
+#ui
+
+dyn_plg
+
