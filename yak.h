@@ -5,5 +5,7 @@ extern char *bot_nick;
 extern char *bot_owners[];
 extern int bot_ownercount;
 
+#define YAK_VERSION "0.2.2"
+
 #endif
 

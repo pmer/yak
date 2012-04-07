@@ -8,6 +8,10 @@ quit
 
 ctcp
 ctcp_ping
+ctcp_version
 
 eval
 #ui
+
+dyn_plg
+
