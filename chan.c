@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "access.h"
+#include "auth.h"
 #include "callback.h"
 #include "chan.h"
 #include "diagnostic.h"
@@ -38,6 +38,11 @@ static struct chan *chan_find(char *chan_name)
 void chan_set_prefix(char *prefixes)
 {
 	strcpy(chantypes, prefixes);
+}
+
+bool chan_is_prefix(char c)
+{
+	return strchr(chantypes, c) != NULL;
 }
 
 /*

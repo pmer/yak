@@ -1,0 +1,14 @@
+# Build system
+*.o
+*.so
+yak
+
+# Configuration, program logs
+*.log
+plugins.txt
+yakrc
+
+# Developer notes
+*.txt
+doc
+tags

@@ -9,7 +9,7 @@
  */
 
 #include <string.h>
-#include "access.h"
+#include "auth.h"
 #include "bool.h"
 #include "callback.h"
 #include "ircproto.h"
@@ -27,10 +27,10 @@ void isupport_set(char *param, char *value)
 			*paren = '\0';
 			modes = value + 1;
 			prefixes = paren + 1;
-			access_set_prefix(modes, prefixes);
+			auth_set_prefix(modes, prefixes);
 		}
 		else {
-			access_set_prefix("", "");
+			auth_set_prefix("", "");
 		}
 	}
 }
@@ -40,7 +40,7 @@ void isupport_unset(char *param)
 	if (!strcmp(param, "CHANTYPES"))
 		chan_set_prefix("#&");
 	else if (!strcmp(param, "PREFIX"))
-		access_set_prefix("ov", "@+");
+		auth_set_prefix("ov", "@+");
 }
 
 void isupport_token(char *tok)

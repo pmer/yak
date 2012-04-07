@@ -1,4 +1,4 @@
-#include "access.h"
+#include "auth.h"
 #include "ircproto.h"
 #include "plg.h"
 #include "privmsg.h"
@@ -8,7 +8,7 @@ static void load_lib(char *usr, char *src, char *msg,
 {
 	char *lib;
 
-	if (!access_isowner(usr)) {
+	if (!auth_isowner(usr)) {
 		ircproto_privmsg(src, "err: not owner");
 		return;
 	}

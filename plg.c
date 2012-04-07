@@ -6,6 +6,7 @@
 #include "diagnostic.h"
 #include "list.h"
 #include "plg.h"
+#include "str.h"
 
 struct plg {
 	struct list_head link;
@@ -37,7 +38,6 @@ static bool pdlerror()
 void plg_load_plgs_from(char *filename)
 {
 	FILE *f = fopen(filename, "r");
-	int len;
 	char line[256];
 
 	if (!f) {
@@ -45,9 +45,8 @@ void plg_load_plgs_from(char *filename)
 		return;
 	}
 	while (fgets(line, sizeof(line), f)) {
-		len = strlen(line);
-		line[len-- - 1] = '\0'; /* chop trailing '\n' */
-		if (len)
+		chomp(line);
+		if (*line)
 			plg_load(line);
 	}
 	fclose(f);

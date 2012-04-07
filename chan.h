@@ -1,6 +1,7 @@
 #ifndef CHAN_H
 #define CHAN_N
 
+#include "bool.h"
 #include "list.h"
 
 struct chan {
@@ -10,6 +11,8 @@ struct chan {
 };
 
 void chan_set_prefix(char *prefixes);
+
+bool chan_is_prefix(char c);
 
 /**
  * chan_init - initialize the channel subsystem

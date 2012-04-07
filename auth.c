@@ -1,5 +1,5 @@
 #include <string.h>
-#include "access.h"
+#include "auth.h"
 #include "bool.h"
 #include "diagnostic.h"
 #include "presence.h"
@@ -18,25 +18,25 @@ enum priv prefix2priv(char prefix)
 	return prefixtab[prefix];
 }
 
-bool access_isowner(char *usr)
+bool auth_isowner(char *usr)
 {
 	int i;
 	int len;
-	char *bang, *owner;
+	char *bang, *owner, **owners;
 
 	/* convert usr to nick */
 	bang = strchr(usr, '!');
 	len = bang ? bang - usr : strlen(usr);
 
-	for (i = 0; i < bot_ownercount; i++) {
-		owner = bot_owners[i];
+	for (owners = bot_owners; *owners; owners++) {
+		owner = *owners;
 		if (!strncmp(usr, owner, len) && strlen(owner) == len)
 			return true;
 	}
 	return false;
 }
 
-void access_set_prefix(char *modes, char *prefixes)
+void auth_set_prefix(char *modes, char *prefixes)
 {
 	char *mode, *prefix;
 	enum priv priv;
@@ -54,7 +54,7 @@ void access_set_prefix(char *modes, char *prefixes)
 	}
 }
 
-void access_init()
+void auth_init()
 {
-	access_set_prefix("ov", "@+");
+	auth_set_prefix("ov", "@+");
 }

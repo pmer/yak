@@ -3,7 +3,5 @@
 
 extern char *bot_nick;
 extern char *bot_owners[];
-extern int bot_ownercount;
 
 #endif
-

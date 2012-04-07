@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "access.h"
+#include "auth.h"
 #include "bool.h"
 #include "callback.h"
 #include "chan.h"
@@ -9,47 +9,79 @@
 #include "ircproto.h"
 #include "list.h"
 #include "plg.h"
+#include "pref.h"
 #include "privmsg.h"
 #include "socket.h"
 #include "thread.h"
 #include "usr.h"
 
-/*
- * Configuration.
- */
-/* char *host = "opsimathia.datnode.net"; */
-char *host = "eros.n0v4.com"; /* missing MOTD, convenient */
-int port = 6667;
+char *host;
+int port;
 
-char *bot_nick = "Yak";
-char *bot_user = "Yakk";
-char *bot_real = "Yakkity yak";
-char *bot_identify = NULL;
-char *bot_oper_name = NULL;
-char *bot_oper_pw = NULL;
+char *bot_nick;
+char *bot_user;
+char *bot_real;
+char *nickservnick;
+char *bot_identify;
+char *bot_oper_name;
+char *bot_oper_pw;
 
-char *nickservnick = "NickServ";
+char **bot_channels;
+char **bot_owners;
 
-char *bot_channels[] = {"#bots"};
-int bot_channelcount = 1;
+static void load_whoiam()
+{
+	char *port_str, *owners_str, *chan_str, *tok;
+	int i;
 
-char *bot_owners[] = {"nick"};
-int bot_ownercount = 1;
+	host = pref_get("host");
+	port_str = pref_get("port");
+	bot_nick = pref_get("nick");
+	bot_user = pref_get("user");
+	bot_real = pref_get("real");
+	nickservnick = pref_get("nickserv-nick");
+	bot_identify = pref_get("identify-pw");
+	bot_oper_name = pref_get("oper-name");
+	bot_oper_pw = pref_get("oper-pw");
+	owners_str = pref_get("owners");
+	chan_str = pref_get("channels");
+
+	sscanf(port_str, "%d", &port);
+
+	bot_owners = NULL;
+	for (i = 0, tok = strtok(owners_str, " "); tok; i++, tok = strtok(NULL, " ")) {
+		bot_owners = realloc(bot_owners, sizeof(char*) * (i + 2));
+		bot_owners[i] = tok;
+	}
+	bot_owners[i] = NULL;
+
+	/* move to plugin */
+	bot_channels = NULL;
+	for (i = 0, tok = strtok(chan_str, " "); tok; i++, tok = strtok(NULL, " ")) {
+		bot_channels = realloc(bot_channels, sizeof(char*) * (i + 2));
+		bot_channels[i] = tok;
+	}
+	bot_channels[i] = NULL;
+}
 
 int main()
 {
 	char *prefix, *cmd, *params;
+	char **chans;
 	int ncmd, i;
 
 	/* lock the global mutex during program startup */
 	nthreads++;
 	mutex_on();
 
+	pref_init();
+	load_whoiam();
+
 	callback_init();
 	sock_init();
 	usr_init();
 	chan_init();
-	access_init();
+	auth_init();
 	privmsg_init();
 
 	info("loading plugins from plugins.txt");
@@ -81,8 +113,8 @@ int main()
 
 		if (ncmd == RPL_WELCOME) {
 			/* distributed on successful user registration */
-			for (i = 0; i < bot_channelcount; i++)
-				ircproto_join(bot_channels[i]);
+			for (chans = bot_channels; *chans; chans++)
+				ircproto_join(*chans);
 		}
 		mutex_off();
 	}
