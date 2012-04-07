@@ -1,27 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "bool.h"
 #include "callback.h"
 #include "ircproto.h"
-#include "yak.h"      /* bot_nick */
+#include "yak.h"
 
 static void handle_nicknameinuse(char *prefix, int ncmd, char *params)
 {
-	static bool firsttime = true;
-	char *old, *new;
-
-	old = bot_nick;
-	new = malloc(strlen(old) + 2);
-	sprintf(new, "%s_", old);
-	bot_nick = new;
-
-	if (firsttime)
-		firsttime = false;
-	else
-		free(bot_nick);
-	bot_nick = new;
+	int len = strlen(bot_nick);
+	bot_nick[len++] = '_';
+	bot_nick[len] = '\0';
 	ircproto_nick(bot_nick);
 }
 
@@ -34,4 +23,3 @@ int init()
 void finish()
 {
 }
-

@@ -18,7 +18,7 @@
 char *host;
 int port;
 
-char *bot_nick;
+char bot_nick[512];
 char *bot_user;
 char *bot_real;
 char *nickservnick;
@@ -36,7 +36,7 @@ static void load_whoiam()
 
 	host = pref_get("host");
 	port_str = pref_get("port");
-	bot_nick = pref_get("nick");
+	strcpy(bot_nick, pref_get("nick"));
 	bot_user = pref_get("user");
 	bot_real = pref_get("real");
 	nickservnick = pref_get("nickserv-nick");
