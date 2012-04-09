@@ -15,6 +15,8 @@ struct presence *presence_new(struct chan *chan, struct user *user)
 	pres->priv = PRIV_NONE;
 	list_add(&pres->clink, &chan->presences);
 	list_add(&pres->ulink, &user->presences);
+
+	return pres;
 }
 
 void presence_del(struct presence *pres)

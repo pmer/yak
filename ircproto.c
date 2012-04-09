@@ -11,7 +11,7 @@ void ircproto_parse_message(char *msg, char **prefix, char **cmd,
 {
 	char *spc;
 
-	/* The IRC message specification accoording to RFC 2812 is:
+	/* The IRC message specification according to RFC 2812 is:
 	 *
 	 * [ ":" prefix SPACE ] command [ params ] crlf
 	 */
