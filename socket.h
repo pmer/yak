@@ -8,7 +8,7 @@
 
 extern FILE *socklog;
 
-void establish_connection(char *host, char *port);
+void establish_connection(char *host, char *port, char *ssl_method);
 void close_connection();
 
 void sock_sendline(char *format, ...);

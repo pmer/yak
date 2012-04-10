@@ -17,6 +17,7 @@
 
 char *host;
 char *port;
+char *ssl;
 
 char bot_nick[512];
 char *bot_user;
@@ -36,6 +37,7 @@ static void load_whoiam()
 
 	host = pref_get("host");
 	port = pref_get("port");
+	ssl = pref_get("secure");
 	strcpy(bot_nick, pref_get("nick"));
 	bot_user = pref_get("user");
 	bot_real = pref_get("real");
@@ -92,7 +94,7 @@ int main()
 	if (want_quit)
 		goto shutdown;
 
-	establish_connection(host, port);
+	establish_connection(host, port, ssl);
 
 	ircproto_nick(bot_nick);
 	ircproto_user(bot_user, bot_real);
