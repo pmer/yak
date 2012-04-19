@@ -14,3 +14,7 @@ real Yakkity Yak
 owners ExampleNick
 
 channels #bots
+
+# override default response in ctcp_version plugin
+#version xchat
+

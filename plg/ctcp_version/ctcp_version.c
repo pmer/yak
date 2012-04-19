@@ -11,7 +11,7 @@ static void version(char *usr, char *src, char *msg,
 	
 	version = pref_get("version");
 	
-	if(version == NULL)
+	if (version == NULL)
 		ircproto_notice(src, "\001VERSION yak %s\001", YAK_VERSION);
 	else
 		ircproto_notice(src, "\001VERSION %s\001", version);
