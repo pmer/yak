@@ -1,6 +1,9 @@
 host irc.freenode.net
 port 6667
 
+#port 9999
+#secure sslv23
+
 nick Yak
 user Yakk
 real Yakkity Yak
@@ -11,3 +14,7 @@ real Yakkity Yak
 owners ExampleNick
 
 channels #bots
+
+# override default response in ctcp_version plugin
+#version xchat
+
