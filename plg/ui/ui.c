@@ -14,15 +14,16 @@
 /* fails if before stdio.h ?? */
 #include <readline/readline.h>
 
+static struct evalctx *ectx;
 static char chan[512] = "";
 
 static void cd(char *line, char **caps, int ncaps)
 {
 	if (ncaps > 1 && *caps[1])
 		info("cd: must have one argument");
-	
+
 	info("now talking on %s", caps[0]);
-	
+
 	strcpy(chan, caps[0]);
 }
 
@@ -30,9 +31,10 @@ static void nick(char *line, char **caps, int ncaps)
 {
 	if (ncaps > 1 && *caps[1])
 		info("nick: must have one argument");
-	
+
 	strcpy(bot_nick, caps[0]);
 	ircproto_nick(caps[0]);
+	/* TODO: nick reply should set bot_nick */
 }
 
 static void msg(char *line, char **caps, int ncaps)
@@ -59,8 +61,8 @@ static void *uimain(void *unused)
 
 	while (line = readline("> ")) {
 		mutex_on();
-		if(line[0] == '/') {
-			if (!eval_emit(line + 1)) {
+		if (line[0] == '/') {
+			if (!eval_emit(ectx, line + 1)) {
 				info("invalid command: %s", line);
 			}
 		} else {
@@ -93,18 +95,18 @@ int init()
 	}
 	socklog = newsocklog;
 
-	eval_register(cd, "^cd (\\S+)(.*)?");
-	eval_register(nick, "^nick (\\S+)(.*)?");
-	eval_register(msg, "^msg (\\S+) (.*)");
-	eval_register(quit, "^quit$");
+	ectx = eval_create();
+	eval_register(ectx, cd, "^cd (\\S+)(.*)?");
+	eval_register(ectx, nick, "^nick (\\S+)(.*)?");
+	eval_register(ectx, msg, "^msg (\\S+) (.*)");
+	eval_register(ectx, quit, "^quit$");
 
 	onlogin(create_uithread);
-	
+
 	return 0;
 }
 
 void finish()
 {
-
+	eval_destroy(ectx);
 }
-

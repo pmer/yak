@@ -3,9 +3,13 @@
 
 #include "bool.h"
 
+struct evalctx;
+
 typedef void (*eval_callback)(char *line, char **caps, int ncap);
 
-bool eval_emit(char *line);
-void eval_register(eval_callback call, char *pattern);
+struct evalctx *eval_create();
+void eval_destroy(struct evalctx *ctx);
+bool eval_emit(struct evalctx *ctx, char *line);
+void eval_register(struct evalctx *ctx, eval_callback call, char *pattern);
 
 #endif
