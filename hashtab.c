@@ -158,10 +158,15 @@ void hashtab_stat(struct hashtab *h, struct hashtab_info *info)
 
 unsigned str_hash(struct hashtab *h, void *data)
 {
+	// FNV-1a hash algorithm.
+	// see http://www.isthe.com/chongo/tech/comp/fnv/
+
 	char *str = data;
-	unsigned i;
-	for (i = 0; *str; str++)
-		i = i * 31 + *str;
+	unsigned i = 2166136261;
+	for (i; *str; str++) {
+		i ^= *str;
+		i *= 16777619;
+	}
 	return i % h->size;
 }
 
