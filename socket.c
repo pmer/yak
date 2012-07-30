@@ -52,9 +52,7 @@ void establish_connection(char *host, char *port, char *ssl_method)
 
 		if (ssl_method != NULL) {
 			/* attempt to establish a secure connection */
-			if (strcasecmp(ssl_method, "sslv2") == 0) {
-				ctx = SSL_CTX_new(SSLv2_method());
-			} else if (strcasecmp(ssl_method, "sslv3") == 0) {
+			if (strcasecmp(ssl_method, "sslv3") == 0) {
 				ctx = SSL_CTX_new(SSLv3_method());
 			} else if (strcasecmp(ssl_method, "tlsv1") == 0) {
 				ctx = SSL_CTX_new(TLSv1_method());

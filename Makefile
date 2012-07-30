@@ -1,6 +1,6 @@
 OPT = -g
 CFLAGS := -std=gnu99 -pthread $(OPT) $(CFLAGS)
-LDFLAGS := -lpcre -lssl -pthread -ldl -rdynamic $(OPT) $(LDFLAGS)
+LDFLAGS := -lpcre -lssl -lcrypto -pthread -ldl -rdynamic $(OPT) $(LDFLAGS)
 
 OBJECTS = \
 	auth.o \
