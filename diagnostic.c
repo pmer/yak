@@ -1,7 +1,9 @@
+#include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include "bool.h"
 #include "diagnostic.h"
 
 bool want_quit = false;
@@ -64,6 +66,21 @@ void err(char* format, ...)
 	va_start(args, format);
 	vfprintf(stderr, format, args);
 	va_end(args);
+	fputc('\n', stderr);
+	txtattr(stderr, CLEAR);
+}
+
+void err_errno(char* format, ...)
+{
+	va_list args;
+	int err = errno;
+
+	txtattr(stderr, REVERSE_VIDEO);
+	fprintf(stderr, "! ");
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+	fprintf(stderr, ": %s", strerror(err));
 	fputc('\n', stderr);
 	txtattr(stderr, CLEAR);
 }

@@ -32,11 +32,11 @@ void presence_del(struct presence *pres)
 
 struct presence *presence_find(struct chan *chan, struct user *user)
 {
-	struct list_head *pos;
+	struct list_head *node;
 	struct presence *pres;
 
-	list_for_each(pos, &user->presences) {
-		pres = list_entry(pos, struct presence, ulink);
+	list_for_each(node, &user->presences) {
+		pres = list_entry(node, struct presence, ulink);
 		if (pres->chan == chan)
 			return pres;
 	}

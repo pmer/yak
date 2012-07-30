@@ -17,4 +17,3 @@ char *sock_readline();
 void sock_init();
 
 #endif
-

@@ -24,11 +24,11 @@ static void chan_new(char *chan_name)
 
 static struct chan *chan_find(char *chan_name)
 {
-	struct list_head *pos;
+	struct list_head *node;
 	struct chan *chan;
 
-	list_for_each(pos, &chans) {
-		chan = list_entry(pos, struct chan, link);
+	list_for_each(node, &chans) {
+		chan = list_entry(node, struct chan, link);
 		if (!strcasecmp(chan->name, chan_name))
 			return chan;
 	}

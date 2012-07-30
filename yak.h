@@ -1,9 +1,9 @@
 #ifndef YAK_H
 #define YAK_H
 
-extern char bot_nick[];
-extern char *bot_owners[];
+extern char **argv;
 
-#define YAK_VERSION "0.2.2"
+extern char *bot_nick;
+extern char **bot_owners;
 
 #endif

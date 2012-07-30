@@ -17,4 +17,3 @@ void callback_register_privmsg_re(callback_privmsg_re call, char *pattern);
 void privmsg_init();
 
 #endif
-

@@ -9,13 +9,10 @@ static void ping(char *usr, char *src, char *msg,
 
 int init()
 {
-	ctcp_register(ping, "^PING (.*)$");
-	
+	ctcp_register(ping, "^PING ?(.*)");
 	return 0;
 }
 
 void finish()
 {
-
 }
-

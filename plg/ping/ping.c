@@ -15,4 +15,3 @@ int init()
 void finish()
 {
 }
-

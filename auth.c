@@ -1,6 +1,6 @@
+#include <stdbool.h>
 #include <string.h>
 #include "auth.h"
-#include "bool.h"
 #include "diagnostic.h"
 #include "presence.h"
 #include "yak.h"

@@ -1,6 +1,6 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bool.h"
 #include "diagnostic.h"
 #include "hashtab.h"
 #include "ircproto.h"
@@ -34,7 +34,7 @@ static LIST_HEAD(re_events);
 void callback_emit_privmsg(char *usr, char *src, char *msg)
 {
 	callback_privmsg_str call;
-	struct list_head *list;
+	struct list_head *node;
 	struct re_event *rev;
 	int matches, ncap, i;
 
@@ -55,8 +55,8 @@ void callback_emit_privmsg(char *usr, char *src, char *msg)
 		call(usr, src, msg);
 
 	/* regex events */
-	list_for_each(list, &re_events) {
-		rev = list_entry(list, struct re_event, link);
+	list_for_each(node, &re_events) {
+		rev = list_entry(node, struct re_event, link);
 		matches = regex_match(&rev->match, msg, caps);
 		ncap = matches - 1;
 		if (ncap >= 0)

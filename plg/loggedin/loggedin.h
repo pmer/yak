@@ -1,7 +1,7 @@
 #ifndef LOGGEDIN_H
 #define LOGGEDIN_H
 
-#include "bool.h"
+#include <stdbool.h>
 
 typedef void (*fn)();
 

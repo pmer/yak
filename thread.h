@@ -1,8 +1,6 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include "bool.h"
-
 /**
  * Enable mutexes support if nthreads > 1.
  */

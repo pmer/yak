@@ -1,8 +1,8 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "auth.h"
-#include "bool.h"
 #include "callback.h"
 #include "chan.h"
 #include "diagnostic.h"
@@ -15,11 +15,14 @@
 #include "thread.h"
 #include "usr.h"
 
+/* necessary for restarting process with same params */
+char **argv;
+
 char *host;
 char *port;
 char *ssl;
 
-char bot_nick[512];
+char *bot_nick;
 char *bot_user;
 char *bot_real;
 char *nickservnick;
@@ -30,6 +33,13 @@ char *bot_oper_pw;
 char **bot_channels;
 char **bot_owners;
 
+static void free_nick_owners_channels()
+{
+	free(bot_nick);
+	free(bot_owners);
+	free(bot_channels);
+}
+
 static void load_whoiam()
 {
 	char *owners_str, *chan_str, *tok;
@@ -38,7 +48,7 @@ static void load_whoiam()
 	host = pref_get("host");
 	port = pref_get("port");
 	ssl = pref_get("secure");
-	strcpy(bot_nick, pref_get("nick"));
+	bot_nick = strdup(pref_get("nick"));
 	bot_user = pref_get("user");
 	bot_real = pref_get("real");
 	nickservnick = pref_get("nickserv-nick");
@@ -62,13 +72,17 @@ static void load_whoiam()
 		bot_channels[i] = tok;
 	}
 	bot_channels[i] = NULL;
+
+	add_shutdown_fn(free_nick_owners_channels);
 }
 
-int main()
+int main(int argc, char **_argv)
 {
 	char *prefix, *cmd, *params;
 	char **chans;
 	int ncmd, i;
+
+	argv = _argv;
 
 	/* lock the global mutex during program startup */
 	nthreads++;

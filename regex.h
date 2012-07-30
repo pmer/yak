@@ -1,7 +1,7 @@
 #ifndef REGEX_H
 #define REGEX_H
 
-#include "bool.h"
+#include <stdbool.h>
 
 /*
  * Maximum number of captures that can be handled in a regular expression. If
@@ -49,4 +49,3 @@ int regex_match(struct regex *re, char *str, char **caps);
 void regex_free(struct regex *re);
 
 #endif
-

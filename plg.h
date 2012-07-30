@@ -25,4 +25,3 @@ void *plg_sym(char *plg_name, char *symbol);
 void plg_free_all();
 
 #endif
-

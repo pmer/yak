@@ -8,9 +8,9 @@
  *   www.irc.org/tech_docs/draft-brocklesby-irc-isupport-03.txt
  */
 
+#include <stdbool.h>
 #include <string.h>
 #include "auth.h"
-#include "bool.h"
 #include "callback.h"
 #include "ircproto.h"
 

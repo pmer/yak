@@ -10,4 +10,3 @@ void finish()
 {
 	ircproto_privmsg("#bots", "Farewell.");
 }
-

@@ -28,7 +28,14 @@ struct evalctx *eval_create()
 
 void eval_destroy(struct evalctx *ctx)
 {
-	/* FIXME: Free list. */
+	struct list_head *node, *next;
+	struct re_event *e;
+
+	list_for_each_safe(node, next, &ctx->events) {
+		e = list_entry(node, struct re_event, link);
+		list_del(node);
+		free(e);
+	}
 	free(ctx);
 }
 

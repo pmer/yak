@@ -2,8 +2,7 @@
 #define DIAGNOSTIC_H
 
 #include <stdarg.h>
-
-#include "bool.h"
+#include <stdbool.h>
 
 /**
  * info - display msg to user running yak
@@ -14,6 +13,11 @@ void info(char* format, ...);
  * err - display error msg to user running yak
  */
 void err(char* format, ...);
+
+/**
+ * err - display error msg with errno information to user running yak
+ */
+void err_errno(char* format, ...);
 
 /**
  * safe_shutdown - nicely shut down all running services without exitting
@@ -50,4 +54,3 @@ void die(char* msg);
 extern bool want_quit;
 
 #endif
-

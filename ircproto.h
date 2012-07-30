@@ -41,6 +41,7 @@ void ircproto_oper(char *oper_username, char *password);
 void ircproto_join(char *chan_name);
 void ircproto_part(char *chan_name);
 void ircproto_privmsg(char *recipient, char *format, ...);
+void ircproto_privmsg_errno(char *recipient, char *format, ...);
 void ircproto_notice(char *recipient, char *format, ...);
 void ircproto_topic(char *chan_name, char *format, ...);
 void ircproto_kick(char *chan_name, char *nick, char *format, ...);

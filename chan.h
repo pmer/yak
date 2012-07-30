@@ -1,7 +1,7 @@
 #ifndef CHAN_H
 #define CHAN_N
 
-#include "bool.h"
+#include <stdbool.h>
 #include "list.h"
 
 struct chan {

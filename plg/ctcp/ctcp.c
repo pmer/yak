@@ -1,7 +1,8 @@
+#include <assert.h>
 #include <stdlib.h>
-#include "privmsg.h"
 #include "ctcp.h"
 #include "list.h"
+#include "privmsg.h"
 #include "regex.h"
 
 struct re_event {
@@ -20,7 +21,7 @@ static LIST_HEAD(events);
 void ctcp_emit(char *usr, char *src, char *msg)
 {
 	ctcp_callback call;
-	struct list_head *list;
+	struct list_head *node;
 	struct re_event *rev;
 	int matches, ncap, i;
 
@@ -36,8 +37,8 @@ void ctcp_emit(char *usr, char *src, char *msg)
 	}
 
 	/* regex events */
-	list_for_each(list, &events) {
-		rev = list_entry(list, struct re_event, link);
+	list_for_each(node, &events) {
+		rev = list_entry(node, struct re_event, link);
 		matches = regex_match(&rev->match, msg, caps);
 		ncap = matches - 1;
 		if (ncap >= 0)
@@ -58,9 +59,10 @@ static void handle_ctcp(char *usr, char *src, char *msg,
 		char **caps, int ncaps)
 {
 	char *message;
-	
+
+	assert(ncaps >= 1);
+
 	message = caps[0];
-	
 	ctcp_emit(usr, src, message);
 }
 
@@ -72,5 +74,12 @@ int init()
 
 void finish()
 {
-}
+	struct list_head *node, *next;
+	struct re_event *e;
 
+	list_for_each_safe(node, next, &events) {
+		e = list_entry(node, struct re_event, link);
+		list_del(node);
+		free(e);
+	}
+}

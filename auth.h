@@ -5,7 +5,7 @@
  * Acess control.
  */
 
-#include "bool.h"
+#include <stdbool.h>
 
 /**
  * mode2priv - convert a channel mode to a user privilege level

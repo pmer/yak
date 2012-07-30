@@ -1,8 +1,8 @@
 #include <pthread.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "bool.h"
 #include "diagnostic.h"
 #include "ircproto.h"
 #include "socket.h"
@@ -32,7 +32,8 @@ static void nick(char *line, char **caps, int ncaps)
 	if (ncaps > 1 && *caps[1])
 		info("nick: must have one argument");
 
-	strcpy(bot_nick, caps[0]);
+	free(bot_nick);
+	bot_nick = strdup(caps[0]);
 	ircproto_nick(caps[0]);
 	/* TODO: nick reply should set bot_nick */
 }

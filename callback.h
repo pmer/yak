@@ -18,4 +18,3 @@ void callback_register_str(callback_str call, char *cmd);
 void callback_init();
 
 #endif
-

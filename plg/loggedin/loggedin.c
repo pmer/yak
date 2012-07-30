@@ -23,15 +23,15 @@ void onlogin(fn call)
 
 static void login(char *prefix, int ncmd, char *params)
 {
-	struct list_head *pos, *next;
-	struct callnode *node;
+	struct list_head *node, *next;
+	struct callnode *call;
 
 	loggedin = true;
-	list_for_each_safe(pos, next, &calls) {
-		node = list_entry(pos, struct callnode, link);
-		node->call();
-		list_del(pos);
-		free(node);
+	list_for_each_safe(node, next, &calls) {
+		call = list_entry(node, struct callnode, link);
+		call->call();
+		list_del(node);
+		free(call);
 	}
 }
 
@@ -43,4 +43,12 @@ int init()
 
 void finish()
 {
+	struct list_head *node, *next;
+	struct callnode *call;
+
+	list_for_each_safe(node, next, &calls) {
+		call = list_entry(node, struct callnode, link);
+		list_del(node);
+		free(call);
+	}
 }

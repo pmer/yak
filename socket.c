@@ -1,25 +1,28 @@
+#include <assert.h>
+#include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/ssl.h>
-#include <openssl/err.h>
 #include <netdb.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "bool.h"
 #include "diagnostic.h"
 #include "socket.h"
 
 #define IRC_MSG_MAX_LEN 512 /* defined in RFC 2818 2.3.1 */
 
-static int sock;
-SSL *ssl;
-FILE *socklog;
+static int sock = -1;
+SSL *ssl = NULL;
+FILE *socklog = NULL;
 
 void establish_connection(char *host, char *port, char *ssl_method)
 {
 	struct addrinfo hints, *servinfo, *p;
 	SSL_CTX *ctx;
 	int rv;
+
+	assert(sock == -1);
 
 	if (ssl_method != NULL) {
 		SSL_library_init();
@@ -38,27 +41,28 @@ void establish_connection(char *host, char *port, char *ssl_method)
 		safe_shutdown_and_die(1);
 	}
 
-	for(p = servinfo; p != NULL; p = p->ai_next) {
+	for (p = servinfo; p != NULL; p = p->ai_next) {
 		if ((sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-			perror("socket");
+			err_errno("socket");
 			continue;
 		}
 
 		if (connect(sock, p->ai_addr, p->ai_addrlen) == -1) {
 			close(sock);
-			perror("connect");
+			sock = -1;
+			err_errno("connect");
 			continue;
 		}
 
 		if (ssl_method != NULL) {
 			/* attempt to establish a secure connection */
-			if (strcasecmp(ssl_method, "sslv3") == 0) {
+			if (strcasecmp(ssl_method, "sslv3") == 0)
 				ctx = SSL_CTX_new(SSLv3_method());
-			} else if (strcasecmp(ssl_method, "tlsv1") == 0) {
+			else if (strcasecmp(ssl_method, "tlsv1") == 0)
 				ctx = SSL_CTX_new(TLSv1_method());
-			} else if (strcasecmp(ssl_method, "sslv23") == 0) {
+			else if (strcasecmp(ssl_method, "sslv23") == 0)
 				ctx = SSL_CTX_new(SSLv23_method());
-			} else {
+			else {
 				err("unknown secure connection method: %s", ssl_method);
 				safe_shutdown_and_die(1);
 			}
@@ -66,6 +70,7 @@ void establish_connection(char *host, char *port, char *ssl_method)
 			if (ctx == NULL) {
 				ERR_print_errors_fp(stderr);
 				close(sock);
+				sock = -1;
 				continue;
 			}
 
@@ -73,24 +78,27 @@ void establish_connection(char *host, char *port, char *ssl_method)
 			if (ssl == NULL) {
 				ERR_print_errors_fp(stderr);
 				close(sock);
+				sock = -1;
 				continue;
 			}
 
 			if (SSL_set_fd(ssl, sock) != 1) {
 				ERR_print_errors_fp(stderr);
 				close(sock);
+				sock = -1;
 				continue;
 			}
 
 			if (SSL_connect(ssl) != 1) {
 				ERR_print_errors_fp(stderr);
 				close(sock);
+				sock = -1;
 				continue;
 			}
 
 			SSL_CTX_free(ctx);
 		}
-		
+
 		break;
 	}
 
@@ -110,21 +118,30 @@ void establish_connection(char *host, char *port, char *ssl_method)
 
 void close_connection()
 {
+	assert(sock != -1);
+
 	if (ssl != NULL) {
-		SSL_shutdown(ssl);
+		if (SSL_shutdown(ssl) == -1)
+			ERR_print_errors_fp(stderr);
 		SSL_free(ssl);
 	}
-	close(sock);
+
+	if (close(sock) == -1)
+		err_errno("close");
+	sock = -1;
 }
 
 void sock_send(const void *buffer, size_t length)
 {
+	assert(sock != -1);
+
 	if (ssl == NULL) {
 		if (send(sock, buffer, length, 0) == -1) {
-			perror("send");
+			err_errno("send");
 			safe_shutdown_and_die(1);
 		}
-	} else {
+	}
+	else {
 		if (SSL_write(ssl, buffer, length) <= 0) {
 			ERR_print_errors_fp(stderr);
 			safe_shutdown_and_die(1);
@@ -134,6 +151,8 @@ void sock_send(const void *buffer, size_t length)
 
 ssize_t sock_recv(void *buffer, size_t length)
 {
+	assert(sock != -1);
+
 	if (ssl == NULL)
 		return recv(sock, buffer, length, 0);
 	else
@@ -144,6 +163,8 @@ void sock_sendline(char *format, ...)
 {
 	va_list args;
 	char buffer[IRC_MSG_MAX_LEN];
+
+	assert(sock != -1);
 
 	/* log */
 	fprintf(socklog, "> ");
@@ -157,7 +178,7 @@ void sock_sendline(char *format, ...)
 	va_start(args, format);
 	vsprintf(buffer, format, args);
 	va_end(args);
-	
+
 	sock_send(buffer, strlen(buffer));
 	sock_send("\n", 1);
 }
@@ -170,10 +191,12 @@ static void sock_drainline()
 	int ret;
 	char c = 0;
 
+	assert(sock != -1);
+
 	while (c != '\n') {
 		ret = sock_recv(&c, 1);
 		if (ret == -1) {
-			perror("recv");
+			err_errno("recv");
 			safe_shutdown_and_die(1);
 		}
 		else if (ret == 0) {
@@ -189,10 +212,12 @@ char *sock_readline()
 	int ret, i = 0;
 	char c = 0;
 
+	assert(sock != -1);
+
 	while (c != '\n') {
 		ret = sock_recv(&c, 1);
 		if (ret == -1) {
-			perror("recv");
+			err_errno("recv");
 			safe_shutdown_and_die(1);
 		}
 		else if (ret == 0) {

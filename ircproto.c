@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -144,6 +145,18 @@ void ircproto_privmsg(char *recipient, char *format, ...)
 	va_end(args);
 
 	sock_sendline("PRIVMSG %s :%s", recipient, message);
+}
+
+void ircproto_privmsg_errno(char *recipient, char *format, ...)
+{
+	va_list args;
+	char message[512];
+
+	va_start(args, format);
+	vsnprintf(message, sizeof(message), format, args);
+	va_end(args);
+
+	sock_sendline("PRIVMSG %s :err: %s: %s", recipient, message, strerror(errno));
 }
 
 void ircproto_notice(char *recipient, char *format, ...)

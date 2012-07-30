@@ -1,6 +1,6 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bool.h"
 #include "callback.h"
 #include "diagnostic.h"
 #include "hashtab.h"

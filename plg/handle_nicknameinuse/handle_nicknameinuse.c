@@ -1,14 +1,14 @@
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bool.h"
 #include "callback.h"
 #include "ircproto.h"
 #include "yak.h"
 
 static void handle_nicknameinuse(char *prefix, int ncmd, char *params)
 {
-	int len = strlen(bot_nick);
+	size_t len = strlen(bot_nick);
+	bot_nick = realloc(bot_nick, len + 2);
 	bot_nick[len++] = '_';
 	bot_nick[len] = '\0';
 	ircproto_nick(bot_nick);

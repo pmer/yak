@@ -80,4 +80,4 @@ void hashtab_stat(struct hashtab *h, struct hashtab_info *info);
 unsigned str_hash(struct hashtab *h, void *data);
 int strcmp_hash(struct hashtab *h, void *a, void *b);
 
-#endif	/* _SS_HASHTAB_H */
+#endif

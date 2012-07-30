@@ -1,8 +1,8 @@
 #include <dlfcn.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bool.h"
 #include "diagnostic.h"
 #include "list.h"
 #include "plg.h"
@@ -83,11 +83,11 @@ err:
 
 static struct plg *plg_find(char *plg_name)
 {
-	struct list_head *list;
+	struct list_head *node;
 	struct plg *plg;
 
-	list_for_each(list, &plgs) {
-		plg = list_entry(list, struct plg, link);
+	list_for_each(node, &plgs) {
+		plg = list_entry(node, struct plg, link);
 		if (!strncmp(plg_name, plg->name, sizeof(plg->name)))
 			return plg;
 	}
@@ -113,11 +113,11 @@ void *plg_sym(char *plg_name, char *symbol)
 
 void plg_free_all()
 {
-	struct list_head *list, *next;
+	struct list_head *node, *next;
 	struct plg *plg;
 
-	list_for_each_safe(list, next, &plgs) {
-		plg = list_entry(list, struct plg, link);
+	list_for_each_safe(node, next, &plgs) {
+		plg = list_entry(node, struct plg, link);
 		plg->finish();
 		dlclose(plg->so);
 		pdlerror();

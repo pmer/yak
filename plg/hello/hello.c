@@ -10,4 +10,3 @@ void finish()
 {
 	printf("Goodbye!\n");
 }
-

@@ -20,11 +20,7 @@ OBJECTS = \
 	usr.o \
 	yak.o \
 
-
-all: yak
-
 yak: $(OBJECTS)
 
 clean:
 	$(RM) $(OBJECTS) yak
-

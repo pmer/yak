@@ -1,7 +1,7 @@
 #ifndef USR_H
 #define USR_H
 
-#include "bool.h"
+#include <stdbool.h>
 #include "list.h"
 
 struct user {

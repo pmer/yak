@@ -1,5 +1,5 @@
-#include "diagnostic.h"
 #include "callback.h"
+#include "diagnostic.h"
 #include "ircproto.h"
 
 static void handle_yourebanned(char *prefix, int ncmd, char *params)
@@ -17,4 +17,3 @@ int init()
 void finish()
 {
 }
-
