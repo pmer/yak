@@ -1,1 +1,1 @@
-#define YAK_VERSION "0.2.5"
+#define YAK_VERSION "0.2.6"

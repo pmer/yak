@@ -14,6 +14,9 @@ void callback_emit_privmsg(char *usr, char *src, char *msg);
 void callback_register_privmsg_str(callback_privmsg_str call, char *str);
 void callback_register_privmsg_re(callback_privmsg_re call, char *pattern);
 
+/*
+ * privmsg_init - initialize the privmsg callback subsystem
+ */
 void privmsg_init();
 
 #endif

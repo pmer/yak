@@ -1,47 +1,9 @@
+#include <assert.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <string.h>
 #include "callback.h"
 #include "diagnostic.h"
 #include "hashtab.h"
-#include "ircproto.h"
-#include "privmsg.h"
-#include "yak.h"
-
-/*
- * Callback functions.
- */
-static void handle_privmsg(char *usr, char *cmd, char *src_and_msg)
-{
-	/* src_and_msg is in the following format
-	 *
-	 * "channel/nick[!user[@host]] :message"
-	 */
-	char *src, *msg, *spc;
-	bool src_on_heap = false;
-
-	spc = strchr(src_and_msg, ' ');
-	*spc = '\0';
-	src = src_and_msg;
-	msg = spc + 2; /* space, colon */
-	if (!strncasecmp(src, bot_nick, strlen(bot_nick))) {
-		/* Receiving a private query. Strip the source down to just the
-		 * username. */
-		if (strchr(usr, '!')) {
-			src = strdup(usr);
-			*strchr(src, '!') = '\0';
-			src_on_heap = true;
-		}
-		else {
-			src = usr;
-		}
-	}
-
-	callback_emit_privmsg(usr, src, msg);
-
-	if (src_on_heap)
-		free(src);
-}
 
 /*
  * Callback vectors.
@@ -55,6 +17,12 @@ static struct hashtab *str_events;
 void callback_emit_numeric(char *prefix, int ncmd, char *params)
 {
 	callback_numeric call;
+
+	if (ncmd >= MAX_NUMERIC) {
+		info("irc numeric of %d greater than MAX_NUMERIC (%d)",
+				ncmd, MAX_NUMERIC);
+		return;
+	}
 
 	call = num_events[ncmd];
 	if (call)
@@ -75,6 +43,8 @@ void callback_emit_str(char *prefix, char *cmd, char *params)
  */
 void callback_register_numeric(callback_numeric call, int ncmd)
 {
+	assert(ncmd < MAX_NUMERIC);
+
 	if (num_events[ncmd])
 		info("callback_register_numeric: %d: overwriting event", ncmd);
 	num_events[ncmd] = call;
@@ -87,11 +57,16 @@ void callback_register_str(callback_str call, char *cmd)
 }
 
 /*
- * Struction.
+ * (Con|De)struction.
  */
+static void free_str_events()
+{
+	hashtab_destroy(str_events);
+}
+
 void callback_init()
 {
 	memset(num_events, 0, sizeof(num_events));
 	str_events = hashtab_create(str_hash, strcmp_hash, 31);
-	callback_register_str(handle_privmsg, "PRIVMSG");
+	add_shutdown_fn(free_str_events);
 }

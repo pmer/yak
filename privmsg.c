@@ -1,12 +1,14 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "callback.h"
 #include "diagnostic.h"
 #include "hashtab.h"
 #include "ircproto.h"
 #include "list.h"
 #include "plg.h"
 #include "privmsg.h"
+#include "yak.h"
 
 /*
  * Callback data structure.
@@ -79,8 +81,55 @@ void callback_register_privmsg_re(callback_privmsg_re call, char *pattern)
 	list_add(&e->link, &re_events);
 }
 
+
+/*
+ * Callback functions.
+ */
+static void handle_privmsg(char *usr, char *cmd, char *src_and_msg)
+{
+	/* src_and_msg is in the following format
+	 *
+	 * "channel/nick[!user[@host]] :message"
+	 */
+	char *src, *msg, *spc;
+	bool src_on_heap = false;
+
+	spc = strchr(src_and_msg, ' ');
+	*spc = '\0';
+	src = src_and_msg;
+	msg = spc + 2; /* space, colon */
+	if (!strncasecmp(src, bot_nick, strlen(bot_nick))) {
+		/* Receiving a private query. Strip the source down to just the
+		 * username. */
+		if (strchr(usr, '!')) {
+			src = strdup(usr);
+			*strchr(src, '!') = '\0';
+			src_on_heap = true;
+		}
+		else {
+			src = usr;
+		}
+	}
+
+	callback_emit_privmsg(usr, src, msg);
+
+	if (src_on_heap)
+		free(src);
+}
+
+
+/*
+ * (Con|De)struction
+ */
+static void free_str_events()
+{
+	hashtab_destroy(str_events);
+}
+
 void privmsg_init()
 {
 	str_events = hashtab_create(str_hash, strcmp_hash,
 		PRIVMSG_CSTR_BUCKETS);
+	callback_register_str(handle_privmsg, "PRIVMSG");
+	add_shutdown_fn(free_str_events);
 }

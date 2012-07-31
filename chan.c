@@ -107,8 +107,8 @@ static void handle_quit(char *prefix, char *cmd, char *params)
 
 	user = user_find(prefix);
 	if (user) {
-		user_del(user);
 		info("user %s quit", user->nick);
+		user_del(user);
 	}
 	if (!user) {
 		/* user->nick doesn't exist */
